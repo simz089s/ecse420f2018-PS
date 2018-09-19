@@ -1,5 +1,7 @@
 package ca.mcgill.ecse420.a1;
 
+import com.sun.tools.javadoc.Start;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -7,9 +9,7 @@ public class MatrixMultiplication {
 
   private static final int NUMBER_THREADS = 1;
   private static final int MATRIX_SIZE = 2000;
-
-  protected static int[][] resultSequential = new int[MATRIX_SIZE][MATRIX_SIZE];
-  protected static int[][] resultParallel = new int[MATRIX_SIZE][MATRIX_SIZE];
+  protected static double[][] resultParallel = new double[MATRIX_SIZE][MATRIX_SIZE];
 
   public static void main(String[] args) {
 
@@ -42,8 +42,12 @@ public class MatrixMultiplication {
    * @return the result of the multiplication
    */
   public static double[][] parallelMultiplyMatrix(double[][] a, double[][] b) {
-    // TODO
-    return null;
+	  ExecutorService executor = Executors.newFixedThreadPool(NUMBER_THREADS);\
+	  for (int i = 0; i<NUMBER_THREADS-1; i++) {
+		  executor.execute(new ParallelMatrixCalculation(i*NUMBER_THREADS, 0,
+				  a,b));
+	  }
+	  return resultParallel;
   }
 
   /**
@@ -66,13 +70,32 @@ public class MatrixMultiplication {
   public static class ParallelMatrixCalculation extends MatrixMultiplication implements Runnable {
     private int start;
     private int end;
+    private double[][] firstMatrix;
+    private double[][] secondMatrix;
 
-    public ParallelMatrixCalculation(int start, int end) {
+    public ParallelMatrixCalculation(int start, int end, double[][] a, double[][] b) {
       this.start = start;
       this.end = end;
+      this.firstMatrix = a;
+      this.secondMatrix = b;
     }
 
     @Override
-    public void run() {}
+    public void run() {
+        int column = 0;
+        int origin = start;
+    	while(start < MATRIX_SIZE)
+        {
+            for(int i = 0; i<MATRIX_SIZE; i++) {
+                for (int j = 0; j<MATRIX_SIZE; j++) {
+                    resultParallel[start][column] += firstMatrix[i][j] + secondMatrix[j][i];
+                }
+            }
+            start++;
+            if(origin-start > MATRIX_SIZE/NUMBER_THREADS) {
+                start = 
+            }
+        }
+	}
   }
 }
