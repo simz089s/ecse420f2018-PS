@@ -7,6 +7,8 @@ public class MatrixMultiplication {
 	
 	private static final int NUMBER_THREADS = 1;
 	private static final int MATRIX_SIZE = 2000;
+	protected static int[][] returnSequentialResult = new int[MATRIX_SIZE][MATRIX_SIZE];
+	protected static int[][] returnParallelResult = new int[MATRIX_SIZE][MATRIX_SIZE];
 
         public static void main(String[] args) {
 		
@@ -25,7 +27,7 @@ public class MatrixMultiplication {
 	 * @return the result of the multiplication
 	 * */
 	public static double[][] sequentialMultiplyMatrix(double[][] a, double[][] b) {
-		
+		return null;
 	}
 	
 	/**
@@ -35,7 +37,7 @@ public class MatrixMultiplication {
 	 * @param b is the second matrix
 	 * @return the result of the multiplication
 	 * */
-        public static double[][] parallelMultiplyMatrix(double[][] a, double[][] b) {
+	public static double[][] parallelMultiplyMatrix(double[][] a, double[][] b) {
 		
 	}
         
@@ -53,6 +55,18 @@ public class MatrixMultiplication {
             }
         }
         return matrix;
+    }
+    public class ParallelMatrixCalculation extends MatrixMultiplication implements Runnable {
+        private int start;
+        private int end;
+        public ParallelMatrixCalculation(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
+        @Override
+        public void run() {
+
+        }
     }
 	
 }
