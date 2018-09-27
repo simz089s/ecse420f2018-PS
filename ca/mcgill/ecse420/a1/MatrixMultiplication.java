@@ -17,56 +17,39 @@ public class MatrixMultiplication {
     // Generate two random matrices, same size
     double[][] a = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
     double[][] b = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
-
-    // Time methods
-    long startTime = 0L;
-    long endTime = 0L;
-    long runTime = 0L;
-
-    startTime = System.currentTimeMillis();
+    measureTimeSequential(a,b);
+    measureTimeParallel(a,b);
+  }
+  public static void measureTimeSequential(double[][] a, double[][] b) {
+    long startTime = System.currentTimeMillis();
     sequentialMultiplyMatrix(a, b);
-    endTime = System.currentTimeMillis();
-    runTime = endTime - startTime;
+    long endTime = System.currentTimeMillis();
+    long runTime = endTime - startTime;
     System.out.println("Runtime (sequential) : " + runTime);
-
-    startTime = System.currentTimeMillis();
-    parallelMultiplyMatrix(a, b);
-    endTime = System.currentTimeMillis();
-    runTime = endTime - startTime;
-    System.out.println("Runtime (parallel) : " + runTime);
-
-    // Print matrices
-    // printMatrix(a,b);
   }
 
-  public static void printMatrix(double[][] a, double[][] b) {
+  public static void measureTimeParallel(double[][] a, double[][] b) {
+    long startTime = System.currentTimeMillis();
+    parallelMultiplyMatrix(a, b);
+    long endTime = System.currentTimeMillis();
+    long runTime = endTime - startTime;
+    System.out.println("Runtime (sequential) : " + runTime);
+  }
+
+  public static void printOneMatrix(double[][] matrix) {
     for (int i = 0; i < MATRIX_SIZE; i++) {
       for (int j = 0; j < MATRIX_SIZE; j++) {
-        System.out.print(a[i][j] + "|");
+        System.out.print(matrix[i][j] + "|");
       }
       System.out.print("\n");
     }
-    System.out.print("\n");
-    for (int i = 0; i < MATRIX_SIZE; i++) {
-      for (int j = 0; j < MATRIX_SIZE; j++) {
-        System.out.print(b[i][j] + "|");
-      }
-      System.out.print("\n");
-    }
-    System.out.print("\n");
-    for (int i = 0; i < MATRIX_SIZE; i++) {
-      for (int j = 0; j < MATRIX_SIZE; j++) {
-        System.out.print(resultSequencial[i][j] + "|");
-      }
-      System.out.print("\n");
-    }
-    System.out.print("\n");
-    for (int i = 0; i < MATRIX_SIZE; i++) {
-      for (int j = 0; j < MATRIX_SIZE; j++) {
-        System.out.print(resultParallel[i][j] + "|");
-      }
-      System.out.print("\n");
-    }
+  }
+
+  public static void printAllMatrices(double[][] a, double[][] b) {
+    printOneMatrix(a);
+    printOneMatrix(b);
+    printOneMatrix(resultSequencial);
+    printOneMatrix(resultParallel);
   }
   /**
    * Returns the result of a sequential matrix multiplication The two matrices are randomly
