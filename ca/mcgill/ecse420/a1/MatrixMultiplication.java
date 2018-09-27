@@ -7,6 +7,8 @@ public class MatrixMultiplication {
 
   private static final int NUMBER_THREADS = 2;
   private static final int MATRIX_SIZE = 500;
+
+  // Result arrays
   protected static double[][] resultParallel = new double[MATRIX_SIZE][MATRIX_SIZE];
   protected static double[][] resultSequencial = new double[MATRIX_SIZE][MATRIX_SIZE];
 
@@ -15,18 +17,28 @@ public class MatrixMultiplication {
     // Generate two random matrices, same size
     double[][] a = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
     double[][] b = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
-    long startTime = System.currentTimeMillis();
+
+    // Time methods
+    long startTime = 0L;
+    long endTime = 0L;
+    long runTime = 0L;
+
+    startTime = System.currentTimeMillis();
     sequentialMultiplyMatrix(a, b);
-    long endTime = System.currentTimeMillis();
-    long runTime = endTime-startTime;
-    System.out.println("Runtime Sequential = " +runTime);
+    endTime = System.currentTimeMillis();
+    runTime = endTime - startTime;
+    System.out.println("Runtime (sequential) : " + runTime);
+
     startTime = System.currentTimeMillis();
     parallelMultiplyMatrix(a, b);
     endTime = System.currentTimeMillis();
-    runTime = endTime-startTime;
-    System.out.println("Runtime parallel = " +runTime);
-    //printMatrix(a,b);
+    runTime = endTime - startTime;
+    System.out.println("Runtime (parallel) : " + runTime);
+
+    // Print matrices
+    // printMatrix(a,b);
   }
+
   public static void printMatrix(double[][] a, double[][] b) {
     for (int i = 0; i < MATRIX_SIZE; i++) {
       for (int j = 0; j < MATRIX_SIZE; j++) {
