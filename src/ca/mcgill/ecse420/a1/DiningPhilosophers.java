@@ -1,8 +1,9 @@
 package ca.mcgill.ecse420.a1;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class DiningPhilosophers {
 
@@ -10,20 +11,30 @@ public class DiningPhilosophers {
 
     int numberOfPhilosophers = 5;
     Philosopher[] philosophers = new Philosopher[numberOfPhilosophers];
+//    Philosyncher[] philosophers = new Philosyncher[numberOfPhilosophers];
     Object[] chopsticks = new Object[numberOfPhilosophers];
 
     for (int i = 0; i < chopsticks.length; i++) {
-      chopsticks[i] = new Object();
+      chopsticks[i] = new ReentrantLock(true);
     }
 
     ExecutorService execs = Executors.newFixedThreadPool(numberOfPhilosophers);
 
     for (int i = 0; i < numberOfPhilosophers; i++) {
       philosophers[i] = new Philosopher(i, chopsticks, numberOfPhilosophers);
+//      philosophers[i] = new Philosyncher(i, chopsticks, numberOfPhilosophers);
       execs.execute(philosophers[i]);
     }
 
     execs.shutdown();
+
+    while (!execs.isTerminated()) {
+      System.out.println("Running/waiting... (If you see this more than twice in a row, there is probably a deadlock)");
+      try {
+        Thread.sleep(5000);
+      } catch (InterruptedException ex) {
+      }
+    }
   }
 
   public static class Philosopher implements Runnable {
@@ -42,21 +53,23 @@ public class DiningPhilosophers {
     @Override
     public void run() {
       System.out.println("Philosopher #" + id + " started running.");
+      int a = 0;
       while (true) {
         synchronized (chopsticks[id]) {
           synchronized (chopsticks[(id + 1) % numberOfPhilosophers]) {
-            System.out.println("Philosopher #" + id + " eating.");
+            System.out.println("Philosopher #" + id + " eating. " + a);
             try {
               Thread.sleep((int) (Math.random() % 100));
             } catch (InterruptedException ex) {
             }
           }
         }
-        System.out.println("Philosopher #" + id + " thinking.");
+        System.out.println("Philosopher #" + id + " thinking. " + a);
         try {
           Thread.sleep((int) (Math.random() % 100));
         } catch (InterruptedException ex) {
         }
+        a++;
       }
     }
   }
@@ -77,39 +90,32 @@ public class DiningPhilosophers {
     @Override
     public void run() {
       System.out.println("Philosopher #" + id + " started running.");
+      int a = 0;
 
       while (true) {
         pickUpChopstick(id);
-        System.out.println("Philosopher #" + id + " eating.");
+        System.out.println("Philosopher #" + id + " eating. " + a);
+        try {
+          Thread.sleep((int) (Math.random() % 100));
+        } catch (InterruptedException ex) {
+        } finally{
+          putDownChopstick(id);
+        }
+        System.out.println("Philosopher #" + id + " thinking. " + a);
         try {
           Thread.sleep((int) (Math.random() % 100));
         } catch (InterruptedException ex) {
         }
-
-        putDownChopstick(id);
-        System.out.println("Philosopher #" + id + " thinking.");
-        try {
-          Thread.sleep((int) (Math.random() % 100));
-        } catch (InterruptedException ex) {
-        }
+        a++;
       }
     }
 
     private void pickUpChopstick(int pId) {
-      checkChopstick();
-
-    }
-
-    private void checkChopstick() {
-//      TODO
+      ((Lock)chopsticks[pId]).lock();
     }
 
     private void putDownChopstick(int pId) {
-//      TODO
-    }
-
-    private void freeChopstick() {
-//      TODO
+      ((Lock)chopsticks[pId]).unlock();
     }
   }
 }
