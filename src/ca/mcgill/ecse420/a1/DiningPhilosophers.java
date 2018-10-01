@@ -28,9 +28,9 @@ public class DiningPhilosophers {
 
   public static class Philosopher implements Runnable {
 
-    int id;
-    Object[] chopsticks;
-    int numberOfPhilosophers;
+    private int id;
+    private Object[] chopsticks;
+    private int numberOfPhilosophers;
 
     Philosopher(int pId, Object[] pChopsticks, int pNumberOfPhilosophers) {
       id = pId;
@@ -46,18 +46,70 @@ public class DiningPhilosophers {
         synchronized (chopsticks[id]) {
           synchronized (chopsticks[(id + 1) % numberOfPhilosophers]) {
             System.out.println("Philosopher #" + id + " eating.");
-//            try {
-//              Thread.sleep((int) (Math.random() % 600 + 100));
-//            } catch (InterruptedException ex) {
-//            }
+            try {
+              Thread.sleep((int) (Math.random() % 100));
+            } catch (InterruptedException ex) {
+            }
           }
         }
         System.out.println("Philosopher #" + id + " thinking.");
-//        try {
-//          Thread.sleep((int) (Math.random() % 600 + 100));
-//        } catch (InterruptedException ex) {
-//        }
+        try {
+          Thread.sleep((int) (Math.random() % 100));
+        } catch (InterruptedException ex) {
+        }
       }
+    }
+  }
+
+  public static class Philosyncher implements Runnable {
+
+    private int id;
+    private Object[] chopsticks;
+    private int numberOfPhilosophers;
+
+    Philosyncher(int pId, Object[] pChopsticks, int pNumberOfPhilosophers) {
+      id = pId;
+      chopsticks = pChopsticks;
+      numberOfPhilosophers = pNumberOfPhilosophers;
+      System.out.println("Philosopher #" + id + " created.");
+    }
+
+    @Override
+    public void run() {
+      System.out.println("Philosopher #" + id + " started running.");
+
+      while (true) {
+        pickUpChopstick(id);
+        System.out.println("Philosopher #" + id + " eating.");
+        try {
+          Thread.sleep((int) (Math.random() % 100));
+        } catch (InterruptedException ex) {
+        }
+
+        putDownChopstick(id);
+        System.out.println("Philosopher #" + id + " thinking.");
+        try {
+          Thread.sleep((int) (Math.random() % 100));
+        } catch (InterruptedException ex) {
+        }
+      }
+    }
+
+    private void pickUpChopstick(int pId) {
+      checkChopstick();
+
+    }
+
+    private void checkChopstick() {
+//      TODO
+    }
+
+    private void putDownChopstick(int pId) {
+//      TODO
+    }
+
+    private void freeChopstick() {
+//      TODO
     }
   }
 }

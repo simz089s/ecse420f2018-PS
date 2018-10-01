@@ -17,8 +17,9 @@ public class MatrixMultiplication {
     double[][] b = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
     MatrixMultiplication.a = a;
     MatrixMultiplication.b = b;
-    measureParralelleTime();
+    measureParallelTime();
   }
+
   public static void measureSequentialTime() {
     long startTime = System.currentTimeMillis();
     sequentialMultiplyMatrix(a, b);
@@ -26,13 +27,15 @@ public class MatrixMultiplication {
     long runTime = endTime - startTime;
     System.out.println("Runtime (sequential) : " + runTime);
   }
-  public static void measureParralelleTime() {
+
+  public static void measureParallelTime() {
     long startTime = System.currentTimeMillis();
     parallelMultiplyMatrix(a, b);
     long endTime = System.currentTimeMillis();
     long runTime = endTime - startTime;
     System.out.println("Runtime (sequential) : " + runTime);
   }
+
   /**
    * Returns the result of a sequential matrix multiplication The two matrices are randomly
    * generated
