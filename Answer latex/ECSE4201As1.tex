@@ -1,0 +1,41 @@
+\documentclass[11pt,letterpaper]{exam}
+\usepackage[latin1]{inputenc}
+\usepackage[left=3.00cm, right=3.00cm, top=3.00cm, bottom=3.00cm]{geometry}% You can change margins here
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage[]{algorithm2e}
+\usepackage{amssymb} % use for therefore
+\usepackage{tabto}
+\usepackage{gensymb}
+\usepackage{graphicx} % resize table
+
+\author{Elvric Trombert\\260673394}% Put your Student ID here
+\title{Assignment 1 ECSE 420}
+\begin{document}
+	\maketitle
+	\header{Assignment 1 ECSE 420}{}{Elvric Trombert 260673394}
+	\hrulefill
+	\begin{questions}
+		\setcounter{question}{1}
+		\question
+			\begin{parts}
+				\part
+					In our case deadlock can occur when the sleep time of Thread 1 is longer than than the sleep time of thread 2. Since Thread 1 would have acquired the first lock but will want to acquire the second lock. Which would have already been acquired by the second thread as it walk up earlier which will be waiting to acquire the first lock. Hence we are in a deadlock as neither thread is willing to give up there lock but cannot finish there execution without the other thread's lock.
+				\part
+%					In our case there are different solutions to avoid that kind of deadlock. One would be to force any method in a thread willing to access locks to either access all of them at once, or if one of them cannot be accessed release all its held locks and try again. In our case this could be implemented by the tryLock() function.
+					
+					Hold-and-wait
+					
+					Require a process to request all of its required resources at a time making it block otherwise only activating it when all the resources are available. This prohibits resources from being use optimally. Sometimes it is hard to know in advance all the resources that a process will need. The programmer will have to give all the possible resources required by the process note that these are possible not required.
+					
+					No preemption
+					
+					If a process holding resources is denied a further request that process must release all its unused resources and request them again.
+					
+					Circular wait
+					
+					Can be prevented by defining a linear ordering of resource type. If a process ahs been allocated resource of type R, then it may subsequently request only those resources of types following R in the ordering. So P1 holds are R1 so it can only request $Ri>1$, P2 holds R2 so it can only request $Ri>2$. 
+			\end{parts}
+		
+	\end{questions}
+\end{document}

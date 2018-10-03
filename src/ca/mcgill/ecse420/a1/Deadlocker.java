@@ -3,38 +3,63 @@ package ca.mcgill.ecse420.a1;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Deadlocker implements Runnable {
+public class Deadlocker {
 
-  private static Lock lock1 = new ReentrantLock();
-  private static Lock lock2 = new ReentrantLock();
-
+  private static Lock[] lockArray = new Lock[2];
   private int id;
 
   public static void main(String[] args) {
-    Runnable th1 = new Deadlocker(1);
-    Runnable th2 = new Deadlocker(2);
-    th1.run();
-    th2.run();
-  }
-
-  Deadlocker(int pId) {
-    id = pId;
-  }
-
-  @Override
-  public void run() {
-    System.out.println("Thread " + id + " started.");
-    while (true) {
-      lock1.lock();
-      lock2.lock();
-      System.out.println("Sleeping.");
-      try {
-        Thread.sleep(1);
-      } catch (InterruptedException e) {
+    lockArray[0] = new ReentrantLock();
+    lockArray[1] = new ReentrantLock();
+    Thread th1 = new Thread() {
+      @Override
+      public void run() {
+        super.run();
+        System.out.println("Thread 1 started");
+        lockArray[0].lock();
+        double rand = Math.random();
+        int time = (int) (1000*rand);
+        System.out.println("Thread 1 sleeps for " + time + " milliseconds" );
+        try {
+          Thread.sleep(time);
+          lockArray[1].lock();
+          System.out.println("Thread 1 unlocked both locks");
+          lockArray[1].unlock();
+        }
+        catch (InterruptedException e) {}
+        finally {
+          lockArray[0].unlock();
+          System.out.println("Thread 2 terminated");
+        }
       }
-      System.out.println("Done.");
-      lock1.unlock();
-      lock2.unlock();
-    }
+    };
+    Thread th2 = new Thread(){
+    
+      @Override
+      public void run() {
+        super.run();
+        System.out.println("Thread 2 started");
+        double rand = Math.random();
+        int time = (int) (1000*rand);
+        System.out.println("Thread 2 sleeps for " + time + " milliseconds" );
+        try {
+          Thread.sleep(time);
+          lockArray[1].lock();
+          lockArray[0].lock();      
+          System.out.println("Thread 2 unlocked both locks");
+          lockArray[0].unlock();
+          lockArray[1].unlock();
+          System.out.println("Thread 2 terminated");
+        }
+        catch (InterruptedException e) {}
+      }
+    };
+  th1.start();
+  th2.start();
+  try {
+    th1.join();
+    th2.join();
+  }
+  catch (InterruptedException e) {}
   }
 }
