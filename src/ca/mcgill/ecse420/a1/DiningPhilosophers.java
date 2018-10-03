@@ -10,8 +10,8 @@ public class DiningPhilosophers {
   public static void main(String[] args) {
 
     int numberOfPhilosophers = 5;
-    Philosopher[] philosophers = new Philosopher[numberOfPhilosophers];
-//    Philosyncher[] philosophers = new Philosyncher[numberOfPhilosophers];
+//    Philosopher[] philosophers = new Philosopher[numberOfPhilosophers];
+    Philosyncher[] philosophers = new Philosyncher[numberOfPhilosophers];
     Object[] chopsticks = new Object[numberOfPhilosophers];
 
     for (int i = 0; i < chopsticks.length; i++) {
@@ -21,8 +21,8 @@ public class DiningPhilosophers {
     ExecutorService execs = Executors.newFixedThreadPool(numberOfPhilosophers);
 
     for (int i = 0; i < numberOfPhilosophers; i++) {
-      philosophers[i] = new Philosopher(i, chopsticks, numberOfPhilosophers);
-//      philosophers[i] = new Philosyncher(i, chopsticks, numberOfPhilosophers);
+//      philosophers[i] = new Philosopher(i, chopsticks, numberOfPhilosophers);
+      philosophers[i] = new Philosyncher(i, chopsticks, numberOfPhilosophers);
       execs.execute(philosophers[i]);
     }
 
@@ -90,23 +90,29 @@ public class DiningPhilosophers {
     @Override
     public void run() {
       System.out.println("Philosopher #" + id + " started running.");
-      int a = 0;
+      long startTime;
+      long endTime;
+      long sumTime = 0;
+      int countTime = 1;
 
       while (true) {
+        startTime = System.nanoTime();
         pickUpChopstick(id);
-        System.out.println("Philosopher #" + id + " eating. " + a);
+        endTime = System.nanoTime();
+        sumTime += endTime - startTime;
+        System.out.println("Philosopher #" + id + " eating. Average wait time (ns): " + (sumTime / countTime) + " and ate " + countTime + " times.");
         try {
           Thread.sleep((int) (Math.random() % 100));
         } catch (InterruptedException ex) {
         } finally{
           putDownChopstick(id);
         }
-        System.out.println("Philosopher #" + id + " thinking. " + a);
+        System.out.println("Philosopher #" + id + " thinking.");
         try {
           Thread.sleep((int) (Math.random() % 100));
         } catch (InterruptedException ex) {
         }
-        a++;
+        countTime++;
       }
     }
 

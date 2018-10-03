@@ -5,7 +5,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Deadlocker implements Runnable {
 
-  private static Lock lock = new ReentrantLock();
+  private static Lock lock1 = new ReentrantLock();
+  private static Lock lock2 = new ReentrantLock();
 
   private int id;
 
@@ -24,14 +25,16 @@ public class Deadlocker implements Runnable {
   public void run() {
     System.out.println("Thread " + id + " started.");
     while (true) {
-      lock.lock();
+      lock1.lock();
+      lock2.lock();
       System.out.println("Sleeping.");
       try {
         Thread.sleep(1);
       } catch (InterruptedException e) {
       }
       System.out.println("Done.");
-      lock.unlock();
+      lock1.unlock();
+      lock2.unlock();
     }
   }
 }
