@@ -7,16 +7,17 @@ public class MatrixMultiplication {
 
   private static final int NUMBER_THREADS = 2;
   private static final int MATRIX_SIZE = 2000;
+
+  // To make it easier to use inside the nested ParallelMatrixMultiplication class
   protected static double[][] a;
   protected static double[][] b;
 
   public static void main(String[] args) {
 
     // Generate two random matrices, same size
-    double[][] a = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
-    double[][] b = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
-    MatrixMultiplication.a = a;
-    MatrixMultiplication.b = b;
+    MatrixMultiplication.a = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
+    MatrixMultiplication.b = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
+    //    measureSequentialTime();
     measureParallelTime();
   }
 
@@ -33,7 +34,7 @@ public class MatrixMultiplication {
     parallelMultiplyMatrix(a, b);
     long endTime = System.currentTimeMillis();
     long runTime = endTime - startTime;
-    System.out.println("Runtime (sequential) : " + runTime);
+    System.out.println("Runtime (parallel) : " + runTime);
   }
 
   /**
@@ -70,17 +71,13 @@ public class MatrixMultiplication {
     int numRow = MATRIX_SIZE / NUMBER_THREADS;
     for (int i = 0; i < NUMBER_THREADS; i++) {
       if (MATRIX_SIZE % NUMBER_THREADS != 0 && i == NUMBER_THREADS - 1) {
-        executor.execute(
-            new ParallelMatrixMultiplication(
-                result, i * numRow, MATRIX_SIZE));
+        executor.execute(new ParallelMatrixMultiplication(result, i * numRow, MATRIX_SIZE));
       } else {
-        executor.execute(
-            new ParallelMatrixMultiplication(
-                result, i * numRow, (i + 1) * numRow));
+        executor.execute(new ParallelMatrixMultiplication(result, i * numRow, (i + 1) * numRow));
       }
     }
     executor.shutdown();
-    while (!executor.isTerminated()) {}
+    while (!executor.isTerminated()) ;
 
     return result;
   }
