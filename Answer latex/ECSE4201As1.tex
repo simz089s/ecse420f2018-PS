@@ -16,7 +16,22 @@
 	\header{Assignment 1 ECSE 420}{}{Elvric Trombert 260673394}
 	\hrulefill
 	\begin{questions}
-		\setcounter{question}{1}
+		\question
+			.
+			\begin{figure}[h!]
+				\centering
+				\includegraphics[scale=0.5]{ExecutionTimeThread}
+			\end{figure}
+		
+			This graph follows an exponential decrease in resolution time as we increase the number of threads. It is important to note that we run this test on a 8 corr CPU machine. The reason for that exponential decrease is that at first the amount of work done by a single thread x becomes x/2 then x/3 and so on. The size of the region that each thread needs to calculate gets reduced by a smaller and smaller ratio every time we add a new thread. This is why the decrease in running time is exponential as the size calculated by each thread decreases by a smaller amount each time.
+			
+			\quad Since we are running on an 8 core machine it is normal to see a slight increase it running time when the number of threads exceeds the number of core as this adds overhead transitions cost between threads. In our case this was observed for 9 threads however for 10 threads the execution time decreased compare to the one with 9 threads. We think that this may be due to the fact that the execution region of each thread became so small that most thread managed to finish before the algorithm asked for a thread shift in the CPU which makes overhead costs less costly as we do not need to load the thread back after the switch.
+			
+			\begin{figure}[h!]
+				\centering
+				\includegraphics[scale=0.5]{ExectionParallelSequential}
+			\end{figure}
+			In this case we decided to graph the results on a log scale as the execution time difference between matrix size 100 and 4000 was too large to be visualized on a normal scale. Here the execution time followed a exponential increase for both parallel and sequential. In this case we can see that the execution time of sequential matrix multiplication performed better than the parallel for size 100 and 200 (note that we tried to use 1 to 8 threads for parallel and all times where worse than sequential for all combination at these matrix sizes). We think this is due to the time required to instantiate the executor and the parallelMultiplication class instantiation for parallel that adds greater overheads than just directly starting the sequential execution. However the costs of these overheads has less impact as soon as the matrix size goes over 200 here the parallel execution despite the overheads performs better.
 		\question
 			\begin{parts}
 				\part
