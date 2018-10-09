@@ -42,12 +42,11 @@ public class DiningPhilosophersSync {
   }
 
   public static class Philosyncher implements Runnable {
-
     /*
-    * Different solutions include only allowing n-1 philosophers to eat at any time,
-    * making each philosopher pick the chopstick on the same side except for one,
-    * 
-    * */
+     * Different solutions include only allowing n-1 philosophers to eat at any time,
+     * making each philosopher pick the chopstick on the same side except for one,
+     * ...
+     */
 
     private int id;
     private int numberOfPhilosophers;
@@ -102,35 +101,23 @@ public class DiningPhilosophersSync {
     }
 
     private void pickUpChopstick() {
-      mutex.lock();
-      eaters++;
-      if (eaters >= chopsticks.length) {
-        mutex.unlock();
-        try {
-          waiting.await();
-        } catch (InterruptedException e) {
-          System.out.println("Philosopher #" + id + " interrupted.");
-        }
+      if (id == numberOfPhilosophers - 1) {
+        ((Lock) chopsticks[(id + 1) % numberOfPhilosophers]).lock();
+        ((Lock) chopsticks[id]).lock();
       } else {
-        mutex.unlock();
-      }
-
-      try {
-        eating[id].await();
-        eating[(id + 1) % numberOfPhilosophers].await();
-      } catch (InterruptedException e) {
-        System.out.println("Philosopher #" + id + " interrupted.");
+        ((Lock) chopsticks[id]).lock();
+        ((Lock) chopsticks[(id + 1) % numberOfPhilosophers]).lock();
       }
     }
 
     private void putDownChopstick() {
-      eating[id].signal();
-      eating[(id + 1) % numberOfPhilosophers].signal();
-
-      mutex.lock();
-      eaters--;
-      if (eaters == chopsticks.length - 1) waiting.signal();
-      mutex.unlock();
+      if (id == numberOfPhilosophers - 1) {
+        ((Lock) chopsticks[id]).unlock();
+        ((Lock) chopsticks[(id + 1) % numberOfPhilosophers]).unlock();
+      } else {
+        ((Lock) chopsticks[(id + 1) % numberOfPhilosophers]).unlock();
+        ((Lock) chopsticks[id]).unlock();
+      }
     }
   }
 }
