@@ -37,8 +37,6 @@
 				\part
 					In our case deadlock can occur when the sleep time of Thread 1 is longer than than the sleep time of thread 2. Since Thread 1 would have acquired the first lock but will want to acquire the second lock. Which would have already been acquired by the second thread as it walk up earlier which will be waiting to acquire the first lock. Hence we are in a deadlock as neither thread is willing to give up there lock but cannot finish there execution without the other thread's lock.
 				\part
-%					In our case there are different solutions to avoid that kind of deadlock. One would be to force any method in a thread willing to access locks to either access all of them at once, or if one of them cannot be accessed release all its held locks and try again. In our case this could be implemented by the tryLock() function.
-					
 					Hold-and-wait
 					
 					Require a process to request all of its required resources at a time making it block otherwise only activating it when all the resources are available. This prohibits resources from being use optimally. Sometimes it is hard to know in advance all the resources that a process will need. The programmer will have to give all the possible resources required by the process note that these are possible not required.
@@ -51,6 +49,20 @@
 					
 					Can be prevented by defining a linear ordering of resource type. If a process ahs been allocated resource of type R, then it may subsequently request only those resources of types following R in the ordering. So P1 holds are R1 so it can only request $Ri>1$, P2 holds R2 so it can only request $Ri>2$. 
 			\end{parts}
-		
+		\setcounter{question}{3}
+		\question
+		Amdahl's law = $s = \frac{1}{1-p+\frac{p}{N}}$
+		Where s is the speed up and N the number of processors/threads.
+			\begin{parts}
+				\part
+					The sequential part of a program takes 40\% on a single processor remains the same on multi processor as it cannot be parallelized. Hence to get the speed up limit we get the following equation
+					\begin{align*}
+						s &= \frac{1}{0.4+\frac{0.6}{\infty}}\\
+						s &= \frac{1}{0.4}\\
+						&= 2.5
+					\end{align*} 
+				\part
+					
+			\end{parts}
 	\end{questions}
 \end{document}
