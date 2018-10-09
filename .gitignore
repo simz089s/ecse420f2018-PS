@@ -27,3 +27,9 @@ hs_err_pid*
 *.iml
 out
 *.xml
+
+#Latex
+*.gz
+*.aux
+*.log
+*As1.pdf
