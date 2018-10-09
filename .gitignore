@@ -32,3 +32,5 @@ out
 *.gz
 *.aux
 *.log
+*As1.pdf
+
