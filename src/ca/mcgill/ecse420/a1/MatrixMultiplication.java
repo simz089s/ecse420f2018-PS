@@ -17,7 +17,7 @@ public class MatrixMultiplication {
     // Generate two random matrices, same size
     MatrixMultiplication.a = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
     MatrixMultiplication.b = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
-    //    measureSequentialTime();
+    measureSequentialTime();
     measureParallelTime();
   }
 
@@ -68,6 +68,7 @@ public class MatrixMultiplication {
   public static double[][] parallelMultiplyMatrix(double[][] a, double[][] b) {
     double[][] result = new double[MATRIX_SIZE][MATRIX_SIZE];
     ExecutorService executor = Executors.newFixedThreadPool(NUMBER_THREADS);
+    // number of rows to be calculated per threads
     int numRow = MATRIX_SIZE / NUMBER_THREADS;
     for (int i = 0; i < NUMBER_THREADS; i++) {
       if (MATRIX_SIZE % NUMBER_THREADS != 0 && i == NUMBER_THREADS - 1) {
