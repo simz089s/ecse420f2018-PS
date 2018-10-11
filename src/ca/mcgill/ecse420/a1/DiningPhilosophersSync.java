@@ -36,13 +36,16 @@ public class DiningPhilosophersSync {
     execs.shutdown();
   }
 
+  // Mostly the same as DiningPhilosopher.java in general except for the locking
   public static class Philosopher implements Runnable {
 
     private int id;
     private int numberOfPhilosophers;
     private Lock[] chopsticks = new ReentrantLock[2];
-    private Lock mutex;
-    private Condition freeChopstick;
+    private Lock mutex; // Guard critical section of counting and checking the number of eaters
+    private Condition
+        freeChopstick; // If there are available chopsticks for a philosopher such that <=n-1 are
+    // eating
 
     Philosopher(
         int pId,
@@ -52,6 +55,7 @@ public class DiningPhilosophersSync {
         Condition pFreeChopstick) {
       id = pId;
       numberOfPhilosophers = pNumberOfPhilosophers;
+      // More convenient way of keeping track of left and right chopsticks
       chopsticks[0] = (Lock) pChopsticks[id];
       chopsticks[1] = (Lock) pChopsticks[(id + 1) % numberOfPhilosophers];
       mutex = pMutex;
@@ -62,6 +66,7 @@ public class DiningPhilosophersSync {
     @Override
     public void run() {
       System.out.println("Philosopher #" + id + " started running.");
+      // Calculate running average wait time and amount of times having eaten
       long startTime;
       long endTime;
       long sumTime = 0;
@@ -97,24 +102,29 @@ public class DiningPhilosophersSync {
 
     private void pickUpChopsticks() {
       mutex.lock();
-      eaters++;
+      // Entered critical section
+      eaters++; // Show interest in eating
       if (eaters >= numberOfPhilosophers) {
         try {
-          freeChopstick.await();
+          freeChopstick.await(); // Too many eaters, so wait
         } catch (InterruptedException e) {
         }
         mutex.unlock();
       } else mutex.unlock();
+      // "Pick up" chopsticks
       chopsticks[0].lock();
       chopsticks[1].lock();
     }
 
     private void putDownChopsticks() {
+      // "Put down" chopsticks
       chopsticks[0].unlock();
       chopsticks[1].unlock();
       mutex.lock();
-      eaters--;
-      if (eaters == numberOfPhilosophers - 1) freeChopstick.signal();
+      // Entered critical section
+      eaters--; // To "signal" the philosopher is not (or rather, is done) eating
+      if (eaters == numberOfPhilosophers - 1)
+        freeChopstick.signal(); // The actual lock condition signal
       mutex.unlock();
     }
   }

@@ -3,15 +3,20 @@ package ca.mcgill.ecse420.a1;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class DeadLocker {
+public class Deadlocker {
 
   private static Lock[] lockArray = new Lock[2];
 
   public static void main(String[] args) {
     lockArray[0] = new ReentrantLock();
     lockArray[1] = new ReentrantLock();
+
+    // We keep restarting if it doesn't deadlock on the first try and until it deadlocks
     while (true) {
       System.out.println("New attempt...");
+
+      // Create the two threads that will deadlock and run them
+
       Thread th1 =
           new Thread(
               () -> {

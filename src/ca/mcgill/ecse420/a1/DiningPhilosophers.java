@@ -36,7 +36,7 @@ public class DiningPhilosophers {
 
   public static class Philosopher implements Runnable {
 
-    private int id;
+    private int id; // To identify each thread/philosopher
     private int numberOfPhilosophers;
     private Object[] chopsticks;
 
@@ -50,13 +50,17 @@ public class DiningPhilosophers {
     @Override
     public void run() {
       System.out.println("Philosopher #" + id + " started running.");
-      int count = 0;
+      int count = 0; // How many times this philosopher has eaten in a run
       while (true) {
+        // Lock ("reserve"/use) both chopsticks on each side. ID-th chopstick is left and next one
+        // is the right
+        // as an easy and clean way to divide them (wraps around the array to form the "circular
+        // table").
         synchronized (chopsticks[id]) {
           synchronized (chopsticks[(id + 1) % numberOfPhilosophers]) {
             System.out.println("Philosopher #" + id + " eating. " + count);
             try {
-              Thread.sleep(0);
+              Thread.sleep(0); // Eats for 0 ms. Otherwise it takes a while to deadlock.
             } catch (InterruptedException ex) {
             }
           }
