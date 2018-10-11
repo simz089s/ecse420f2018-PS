@@ -34,15 +34,6 @@ public class DiningPhilosophersSync {
     }
 
     execs.shutdown();
-
-    while (!execs.isTerminated()) {
-      System.out.println(
-          "Running/freeChopstick... (If you see this more than twice in a row, there is probably a deadlock)");
-      try {
-        Thread.sleep(5000);
-      } catch (InterruptedException ex) {
-      }
-    }
   }
 
   public static class Philosopher implements Runnable {

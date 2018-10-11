@@ -56,14 +56,14 @@ public class DiningPhilosophers {
           synchronized (chopsticks[(id + 1) % numberOfPhilosophers]) {
             System.out.println("Philosopher #" + id + " eating. " + count);
             try {
-              Thread.sleep(1);
+              Thread.sleep(0);
             } catch (InterruptedException ex) {
             }
           }
         }
         System.out.println("Philosopher #" + id + " thinking. " + count);
         try {
-          Thread.sleep(1);
+          Thread.sleep(0);
         } catch (InterruptedException ex) {
         }
         count++;
