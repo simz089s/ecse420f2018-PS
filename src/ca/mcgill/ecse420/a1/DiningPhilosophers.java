@@ -8,10 +8,8 @@ public class DiningPhilosophers {
   public static void main(String[] args) {
 
     int numberOfPhilosophers = 5;
-
-    Object[] chopsticks = new Object[numberOfPhilosophers];
-
     Philosopher[] philosophers = new Philosopher[numberOfPhilosophers];
+    Object[] chopsticks = new Object[numberOfPhilosophers];
 
     for (int i = 0; i < chopsticks.length; i++) {
       chopsticks[i] = new Object();
@@ -52,23 +50,23 @@ public class DiningPhilosophers {
     @Override
     public void run() {
       System.out.println("Philosopher #" + id + " started running.");
-      int a = 0;
+      int count = 0;
       while (true) {
         synchronized (chopsticks[id]) {
           synchronized (chopsticks[(id + 1) % numberOfPhilosophers]) {
-            System.out.println("Philosopher #" + id + " eating. " + a);
+            System.out.println("Philosopher #" + id + " eating. " + count);
             try {
-              Thread.sleep((int) (Math.random() % 100));
+              Thread.sleep(1);
             } catch (InterruptedException ex) {
             }
           }
         }
-        System.out.println("Philosopher #" + id + " thinking. " + a);
+        System.out.println("Philosopher #" + id + " thinking. " + count);
         try {
-          Thread.sleep((int) (Math.random() % 100));
+          Thread.sleep(1);
         } catch (InterruptedException ex) {
         }
-        a++;
+        count++;
       }
     }
   }

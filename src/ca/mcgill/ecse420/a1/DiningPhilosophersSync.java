@@ -8,24 +8,28 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class DiningPhilosophersSync {
 
+  protected static int eaters = 0;
+
   public static void main(String[] args) {
 
     int numberOfPhilosophers = 5;
-
+    Philosopher[] philosophers = new Philosopher[numberOfPhilosophers];
     Object[] chopsticks = new Object[numberOfPhilosophers];
-    Condition[] eating = new Condition[numberOfPhilosophers];
 
-    Philosyncher[] philosophers = new Philosyncher[numberOfPhilosophers];
+    Lock mutex = new ReentrantLock(true);
+    Condition freeChopstick = mutex.newCondition();
 
     for (int i = 0; i < chopsticks.length; i++) {
       chopsticks[i] = new ReentrantLock(true);
-      eating[i] = ((Lock) chopsticks[i]).newCondition();
     }
 
     ExecutorService execs = Executors.newFixedThreadPool(numberOfPhilosophers);
 
     for (int i = 0; i < numberOfPhilosophers; i++) {
-      philosophers[i] = new Philosyncher(i, numberOfPhilosophers, chopsticks, eating);
+      philosophers[i] = new Philosopher(i, numberOfPhilosophers, chopsticks, mutex, freeChopstick);
+    }
+
+    for (int i = 0; i < numberOfPhilosophers; i++) {
       execs.execute(philosophers[i]);
     }
 
@@ -33,7 +37,7 @@ public class DiningPhilosophersSync {
 
     while (!execs.isTerminated()) {
       System.out.println(
-          "Running/waiting... (If you see this more than twice in a row, there is probably a deadlock)");
+          "Running/freeChopstick... (If you see this more than twice in a row, there is probably a deadlock)");
       try {
         Thread.sleep(5000);
       } catch (InterruptedException ex) {
@@ -41,26 +45,26 @@ public class DiningPhilosophersSync {
     }
   }
 
-  public static class Philosyncher implements Runnable {
-    /*
-     * Different solutions include only allowing n-1 philosophers to eat at any time,
-     * making each philosopher pick the chopstick on the same side except for one,
-     * ...
-     */
+  public static class Philosopher implements Runnable {
 
     private int id;
     private int numberOfPhilosophers;
-    private Object[] chopsticks;
-    private Condition[] eating;
-    private static Lock mutex = new ReentrantLock(true);
-    private static Condition waiting = mutex.newCondition();
-    private static int eaters = 0;
+    private Lock[] chopsticks = new ReentrantLock[2];
+    private Lock mutex;
+    private Condition freeChopstick;
 
-    Philosyncher(int pId, int pNumberOfPhilosophers, Object[] pChopsticks, Condition[] pEating) {
+    Philosopher(
+        int pId,
+        int pNumberOfPhilosophers,
+        Object[] pChopsticks,
+        Lock pMutex,
+        Condition pFreeChopstick) {
       id = pId;
       numberOfPhilosophers = pNumberOfPhilosophers;
-      chopsticks = pChopsticks;
-      eating = pEating;
+      chopsticks[0] = (Lock) pChopsticks[id];
+      chopsticks[1] = (Lock) pChopsticks[(id + 1) % numberOfPhilosophers];
+      mutex = pMutex;
+      freeChopstick = pFreeChopstick;
       System.out.println("Philosopher #" + id + " created.");
     }
 
@@ -74,7 +78,7 @@ public class DiningPhilosophersSync {
 
       while (true) {
         startTime = System.nanoTime();
-        pickUpChopstick();
+        pickUpChopsticks();
         endTime = System.nanoTime();
         sumTime += endTime - startTime;
         System.out.println(
@@ -86,38 +90,41 @@ public class DiningPhilosophersSync {
                 + countTime
                 + " times.");
         try {
-          Thread.sleep((int) (Math.random() % 100));
+          Thread.sleep(0);
         } catch (InterruptedException ex) {
         } finally {
-          putDownChopstick();
+          putDownChopsticks();
         }
         System.out.println("Philosopher #" + id + " thinking.");
         try {
-          Thread.sleep((int) (Math.random() % 100));
+          Thread.sleep(0);
         } catch (InterruptedException ex) {
         }
         countTime++;
       }
     }
 
-    private void pickUpChopstick() {
-      if (id == numberOfPhilosophers - 1) {
-        ((Lock) chopsticks[(id + 1) % numberOfPhilosophers]).lock();
-        ((Lock) chopsticks[id]).lock();
-      } else {
-        ((Lock) chopsticks[id]).lock();
-        ((Lock) chopsticks[(id + 1) % numberOfPhilosophers]).lock();
-      }
+    private void pickUpChopsticks() {
+      mutex.lock();
+      eaters++;
+      if (eaters >= numberOfPhilosophers) {
+        try {
+          freeChopstick.await();
+        } catch (InterruptedException e) {
+        }
+        mutex.unlock();
+      } else mutex.unlock();
+      chopsticks[0].lock();
+      chopsticks[1].lock();
     }
 
-    private void putDownChopstick() {
-      if (id == numberOfPhilosophers - 1) {
-        ((Lock) chopsticks[id]).unlock();
-        ((Lock) chopsticks[(id + 1) % numberOfPhilosophers]).unlock();
-      } else {
-        ((Lock) chopsticks[(id + 1) % numberOfPhilosophers]).unlock();
-        ((Lock) chopsticks[id]).unlock();
-      }
+    private void putDownChopsticks() {
+      chopsticks[0].unlock();
+      chopsticks[1].unlock();
+      mutex.lock();
+      eaters--;
+      if (eaters == numberOfPhilosophers - 1) freeChopstick.signal();
+      mutex.unlock();
     }
   }
 }
