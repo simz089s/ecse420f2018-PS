@@ -1,11 +1,29 @@
 1. See `FilterLock.java` and `LamportBakeryLock.java`.
 
-2. Q: Consider LockOne and LockTwo introduced in Chapter 2 of the course text; do they still satisfy two-thread mutual exclusion if the shared atomic registers - “flag” in LockOne and “victim” in LockTwo - are replaced by regular registers?
+2. Consider LockOne and LockTwo introduced in Chapter 2 of the course text; do they still satisfy two-thread mutual exclusion if the shared atomic registers - “flag” in LockOne and “victim” in LockTwo - are replaced by regular registers?
 
-   A: .
+   ```java
+    class LockOne implements Lock {
+        private boolean[] flag = new boolean[2]; // Each thread has flag
+        public void lock() {
+        flag[i] = true; // Set my flag
+        while (flag[j]) {} // Wait for other flag to become false
+   }
+   public class LockTwo implements Lock {
+       private int victim;
+       public void lock() {
+           victim = i; // Let other go first
+           while (victim == i) {}; // Wait for permission
+       }
+       public void unlock() {} // Nothing to do
+   }
+   ```
+
+   A:
 
 3. Consider the protocol shown in Fig. 1 which is supposed to achieve n-thread mutual exclusion.
-    ```java
+
+   ```java
     1 | class LockThree implements Lock {
     2 |   private int turn;
     3 |   private boolean busy = false;
@@ -20,21 +38,27 @@
     12|     busy = false;
     13|   }
     14| }
-    ```
-    1. Does this protocol satisfy mutual exclusion?
+   ```
 
-        .
-    2. Is this protocol deadlock-free?
+   1. Does this protocol satisfy mutual exclusion?
 
-        .
-    3. Is this protocol starvation-free?
+        A:
 
-        .
+   2. Is this protocol deadlock-free?
+
+        A:
+
+   3. Is this protocol starvation-free?
+
+        A:
 
 4. For each of the histories shown in Figs. 2 and 3, are they sequentially consistent? Linearizable?
 
+    A:
+
 5. Consider the class shown in Fig. 4.
-    ```java
+
+   ```java
     1 | class VolatileExample {
     2 |     int x = 0;
     3 |     volatile boolean v = false;
@@ -48,17 +72,21 @@
     11|         }
     12|     }
     13| }
-    ```
+   ```
+
     Suppose two threads A and B are concurrently calling the methods writer and reader.
-    1. According to what you have been told about the Java memory model, will the reader method ever divide by zero? If yes, describe the order in which writer and reader should be invoked (by threads A and B) and take effect for a division by zero to happen.
 
-        .
-    2. Is division by zero possible if both x and v are volatile? What happens if none of x and v are volatile?
+   1. According to what you have been told about the Java memory model, will the reader method ever divide by zero? If yes, describe the order in which writer and reader should be invoked (by threads A and B) and take effect for a division by zero to happen.
 
-        .
+        A:
+
+   2. Is division by zero possible if both x and v are volatile? What happens if none of x and v are volatile?
+
+        A:
 
 6. Consider the regular M-valued MRSW construction shown in Fig. 5
-    ```java
+
+   ```java
     1 | public class RegMRSWRegister implements Register<Byte> {
     2 |     private static int RANGE = Byte.MAX_VALUE - Byte.MIN_VALUE + 1;
     3 |     boolean[] r_bit = new boolean[RANGE]; // regular boolean MRSW
@@ -80,19 +108,27 @@
     19|         return -1; // impossible
     20|     }
     21| }
-    ```
+   ```
+
     True or false:
-    1. If we change the loop at line 11 to `for (int i = x + 1; i < RANGE; i++)`, then the construction is still a regular M-valued MRSW register.
 
-        .
-    2. If we change the loop at line 11 to `for (int i = x + 1; i < RANGE; i++)`, then the construction yields a safe Boolean MRSW register.
+   1. If we change the loop at line 11 to `for (int i = x + 1; i < RANGE; i++)`, then the construction is still a regular M-valued MRSW register.
 
-        .
+        A:
+      
+   2. If we change the loop at line 11 to `for (int i = x + 1; i < RANGE; i++)`, then the construction yields a safe Boolean MRSW register.
+
+        A:
+      
 
 7. Show that if binary consensus using atomic registers is impossible for two threads, then it is also impossible for ___n___ threads, where ***n > 2***.
 
-    .
+    A:
 
 8. Show that if binary consensus using atomic registers is impossible for ***n*** threads, then so is consensus over __*k*__ values, where ___k > 2___.
 
-   .
+    A:
+
+
+
+
