@@ -10,6 +10,7 @@ public class LamportBakeryLock implements Lock {
 
   boolean[] flag;
   Integer[] label;
+  int numLevel;
 
   public LamportBakeryLock(int n) {
     flag = new boolean[n];
@@ -18,10 +19,17 @@ public class LamportBakeryLock implements Lock {
       flag[i] = false;
       label[i] = 0;
     }
+    numLevel = n;
   }
 
   @Override
   public void lock() {
+    int threadId = (int) Thread.currentThread().getId() % numLevel;
+    flag[threadId] = true;
+    label[threadId] = Collections.max(Arrays.asList(label))+1;
+    for (int i = 0; i < numLevel; i++) {
+      while((i != threadId) && flag[i] && ((label[i] < label[threadId]) || ((label[i] == label[threadId]) && i < threadId))) {}
+    }
     //    flag[i] = true; // Doorway. true => I'm interested
     //    label[i] = Collections.max(Arrays.asList(label)) + 1; // Doorway. Take increasing label
     // (read labels in some arbitrary order)
@@ -44,8 +52,8 @@ public class LamportBakeryLock implements Lock {
 
   @Override
   public void unlock() {
-    //    flag[i] = false; // No longer interested
-    // labels are always increasing
+    int threadId = (int) Thread.currentThread().getId() % numLevel;
+    flag[threadId] = false;
   }
 
   @Override

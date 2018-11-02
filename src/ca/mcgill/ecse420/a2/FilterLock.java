@@ -16,11 +16,20 @@ public class FilterLock implements Lock {
     for (int i = 0; i < pNumLevel; i++) {
       level[i] = 0;
     }
+    numLevel = pNumLevel;
   }
 
   @Override
   public void lock() {
-    for (int L = 1; L < numLevel; L++) { // One level at a time
+    int threadId = (int) Thread.currentThread().getId() % numLevel;
+    for (int L = 1; L < numLevel; L++) {
+      level[threadId] = L;
+      victim[L] = threadId;
+      for (int j = 0; j < numLevel; j++) {
+        while ((j != threadId) && (level[j] >= L && victim[L] == threadId)) {}
+      }
+
+      // One level at a time
       //      level[i] = L; // Announce intention to enter level L
       //      victim[L] = i; // Give priority to anyone but me
       //      while (/*(there exists k != i level[k] >= L) && victim[L] == i*/) {} // Wait as long
@@ -44,7 +53,8 @@ public class FilterLock implements Lock {
 
   @Override
   public void unlock() {
-    //    level[i] = 0;
+    int threadId = (int) Thread.currentThread().getId() % numLevel;
+    level[threadId] = 0;
   }
 
   @Override
