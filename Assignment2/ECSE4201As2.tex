@@ -1,0 +1,64 @@
+\documentclass[11pt,letterpaper]{exam}
+\usepackage[latin1]{inputenc}
+\usepackage[left=3.00cm, right=3.00cm, top=3.00cm, bottom=3.00cm]{geometry}% You can change margins here
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage[]{algorithm2e}
+\usepackage{amssymb} % use for therefore
+\usepackage{tabto}
+\usepackage{gensymb}
+\usepackage{graphicx} % resize table
+\usepackage{listings}
+
+\author{Elvric Trombert\\260673394\\Simon Zheng\\260744353}% Put your Student ID here
+\title{Assignment 2 ECSE 420}
+\date{October $10^{\textnormal{th}}$, 2018}
+\begin{document}
+	\maketitle
+	\header{}{Assignment 2 ECSE 420}{}
+	\hrulefill
+	\begin{questions}
+		\question
+			\begin{parts}
+				\part
+					Yes filter locks allow some threads to take over other threads an arbitrary number of times.
+			\end{parts}
+		\question
+		
+		\question
+			\begin{parts}
+				\part
+					False, LockThree does not achieve mutual exclusion. Consider the following example: Thread1 calls the lock method first, so busy is true and turn equal 1 which is equal to Thread1 id. Hence that thread is suck in the while loop. 
+					
+					Thread2 comes in changing turn to 2 so Thread1 enters the critical section while Thread2 gets stuck in the while loop of the lock method.
+					
+					Then Thread3 comes in changing the turn variable to 3 which allows Thread2 to enter the critical section while Thread1 is still executing it. Hence at this step we no longer achieve mutual exclusion.
+					
+				\part
+					This protocol is not deadlock free as if we have only 1 thread: Thread1 entering the lock method it will get stuck in the while loop and while no other thread comes along to change the value of turn it will remain stuck there which can cause a deadlock if it is the only thread running on the machine.
+					
+				\part
+					Here we apply the same logic than above if only one thread Thread1 calls that lock method then it will remain stuck there while other thread may still run other methods but it will remain stuck and starve unless a second thread tries to access the same lock method on the same lock object.
+			\end{parts}
+		\newpage
+		\question
+			Fig 2, is sequentially consistent as we can have the following execution since we are allowed to execute different Thread methods at different times regardless of when they were called:
+			\begin{figure}[h!]
+				\centering
+				\includegraphics[scale=0.4]{Fig2Sequential}
+			\end{figure}
+			
+			However Fig 2 is not linearizable as r.write(3) in thread C must happen before r.read(2) in thread B. Yet r.read(2) in thread C must happen before r.write(2) in thread A. Which forces the value of r to be updated to 2 before being updated to 3 which makes it impossible to read 3 after that stage.
+			
+			Fig3 can do neither of both as thread B writes 1 then read 2 and thread C writes 2 then reads 1. if thread B writes first then thread 2 has to overwrite the value with 2 which makes it impossible to read 2 afterwards and vice versa. Since they are no other threads that write anything but these 2 the execution is not linearizable. If the execution is not linearizable then it is also not sequentially consistent either for the same reasons.
+		
+		\question
+			\begin{parts}
+				\part
+					It is important to know that the write method forces the value of x to be updated before updating the value of v. This means that when v is being updated, x must be equal to 42. Since v in this case is volatile, which means that it gets written to atomically (either it has been updated or it has not). This makes it impossible for the read method to read v as true even if v is being not written to hence it is not possible to divide by 0.
+					
+				\part
+					If they are both volatile the same logic happens, if only x is volatile but not v. Then  
+			\end{parts} 
+	\end{questions}
+\end{document}
