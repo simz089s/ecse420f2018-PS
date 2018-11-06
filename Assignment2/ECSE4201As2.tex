@@ -24,6 +24,10 @@
 					Yes filter locks allow some threads to take over other threads an arbitrary number of times.
 			\end{parts}
 		\question
+			\begin{parts}
+				\part
+					No. On a simultaneous read and write, the register might return the old value, making one or both threads think it is their turn to enter the critical section when it is not. On the other hand, an atomic register is linearizable.
+			\end{parts}
 		
 		\question
 			\begin{parts}
@@ -33,6 +37,8 @@
 					Thread2 comes in changing turn to 2 so Thread1 enters the critical section while Thread2 gets stuck in the while loop of the lock method.
 					
 					Then Thread3 comes in changing the turn variable to 3 which allows Thread2 to enter the critical section while Thread1 is still executing it. Hence at this step we no longer achieve mutual exclusion.
+					
+					Basically, the busy-wait loop requires both conditions to be true, yet it is only ever the "turn" of one thread, which means none of the other threads will busy-wait.
 					
 				\part
 					This protocol is not deadlock free as if we have only 1 thread: Thread1 entering the lock method it will get stuck in the while loop and while no other thread comes along to change the value of turn it will remain stuck there which can cause a deadlock if it is the only thread running on the machine.
@@ -60,5 +66,30 @@
 				\part
 					If they are both volatile the same logic happens, if only x is volatile but not v. Then  
 			\end{parts} 
+	
+	\question
+			\begin{parts}
+				\part
+					6
+			\end{parts} 
+	
+	\question
+			\begin{parts}
+				\part
+					Suppose we have a protocol that can solve binary consensus between two threads.
+					Now, suppose we have $n$ threads, each labeled $t_1, t_2, ..., t_i, ..., t_n$.
+					Then we simply use the protocol to solve binary consensus between $t_i$ and $t_{i+1}$ for all of them.
+					So, the protocol solves consensus between $t_1$ and $t_2$, and then can solve consensus between $t_2$ and $t_3$, and so on. 
+					Logically, this means there is also consensus between $t_3$ and $t_1$, in a transitive way.
+					This way, we know there is always consensus between $t_i$ and $t_j, \forall j < i$.
+			\end{parts}
+	
+	\question
+			\begin{parts}
+				\part
+					8
+			\end{parts} 
+			
 	\end{questions}
+	
 \end{document}

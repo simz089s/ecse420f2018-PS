@@ -26,9 +26,11 @@ public class LamportBakeryLock implements Lock {
   public void lock() {
     int threadId = (int) Thread.currentThread().getId() % numLevel;
     flag[threadId] = true;
-    label[threadId] = Collections.max(Arrays.asList(label))+1;
+    label[threadId] = Collections.max(Arrays.asList(label)) + 1;
     for (int i = 0; i < numLevel; i++) {
-      while((i != threadId) && flag[i] && ((label[i] < label[threadId]) || ((label[i] == label[threadId]) && i < threadId))) {}
+      while ((i != threadId)
+          && flag[i]
+          && ((label[i] < label[threadId]) || ((label[i] == label[threadId]) && i < threadId))) {}
     }
     //    flag[i] = true; // Doorway. true => I'm interested
     //    label[i] = Collections.max(Arrays.asList(label)) + 1; // Doorway. Take increasing label

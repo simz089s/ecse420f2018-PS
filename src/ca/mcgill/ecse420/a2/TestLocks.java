@@ -16,11 +16,11 @@ public class TestLocks {
   }
 
   public static void main(String[] args) {
-      System.out.println("Testing FilterLock");
-    TestLocks filterLocks = new TestLocks(new FilterLock(50),50);
+    System.out.println("Testing FilterLock");
+    TestLocks filterLocks = new TestLocks(new FilterLock(50), 50);
     filterLocks.testTheLock();
     System.out.println("Testing BakeryLock");
-    TestLocks bakeryLock = new TestLocks(new LamportBakeryLock(50),50);
+    TestLocks bakeryLock = new TestLocks(new LamportBakeryLock(50), 50);
     bakeryLock.testTheLock();
   }
 
@@ -38,12 +38,12 @@ public class TestLocks {
           });
     }
     executor.shutdown();
-    while (!executor.isTerminated());
+    while (!executor.isTerminated()) ;
     if (counter == numThread) {
-        System.out.println("The Lock worked successfully");
-    }
-    else {
-        System.out.println("The counter value wad: " + counter + "but was expected to be: " + numThread);
+      System.out.println("The Lock worked successfully");
+    } else {
+      System.out.println(
+          "The counter value wad: " + counter + "but was expected to be: " + numThread);
     }
   }
 }

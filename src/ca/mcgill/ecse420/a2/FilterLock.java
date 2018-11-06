@@ -26,13 +26,13 @@ public class FilterLock implements Lock {
       level[threadId] = L;
       victim[L] = threadId;
       for (int j = 0; j < numLevel; j++) {
-        while ((j != threadId) && (level[j] >= L && victim[L] == threadId)) {}
+        while (j != threadId && level[j] >= L && victim[L] == threadId) {}
       }
 
       // One level at a time
       //      level[i] = L; // Announce intention to enter level L
       //      victim[L] = i; // Give priority to anyone but me
-      //      while (/*(there exists k != i level[k] >= L) && victim[L] == i*/) {} // Wait as long
+      //      while (/*(there exists k != i && level[k] >= L) && victim[L] == i*/) {} // Wait as long
       // as someone else is at same or higher level, and I'm designated victim. Thread enters level
       // L when it completes the loop
     }
