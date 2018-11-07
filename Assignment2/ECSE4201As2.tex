@@ -19,77 +19,72 @@
 	\hrulefill
 	\begin{questions}
 		\question
-			\begin{parts}
-				\part
-					Yes filter locks allow some threads to take over other threads an arbitrary number of times.
-			\end{parts}
+		\begin{parts}
+			\part
+			Yes filter locks allow some threads to take over other threads an arbitrary number of times.
+		\end{parts}
 		\question
-			\begin{parts}
-				\part
-					No. On a simultaneous read and write, the register might return the old value, making one or both threads think it is their turn to enter the critical section when it is not. On the other hand, an atomic register is linearizable.
-			\end{parts}
+		\begin{parts}
+			\part
+			No. On a simultaneous read and write, the register might return the old value, making one or both threads think it is their turn to enter the critical section when it is not. On the other hand, an atomic register is linearizable.
+		\end{parts}
 		
 		\question
-			\begin{parts}
-				\part
-					False, LockThree does not achieve mutual exclusion. Consider the following example: Thread1 calls the lock method first, so busy is true and turn equal 1 which is equal to Thread1 id. Hence that thread is suck in the while loop. 
-					
-					Thread2 comes in changing turn to 2 so Thread1 enters the critical section while Thread2 gets stuck in the while loop of the lock method.
-					
-					Then Thread3 comes in changing the turn variable to 3 which allows Thread2 to enter the critical section while Thread1 is still executing it. Hence at this step we no longer achieve mutual exclusion.
-					
-					Basically, the busy-wait loop requires both conditions to be true, yet it is only ever the "turn" of one thread, which means none of the other threads will busy-wait.
-					
-				\part
-					This protocol is not deadlock free as if we have only 1 thread: Thread1 entering the lock method it will get stuck in the while loop and while no other thread comes along to change the value of turn it will remain stuck there which can cause a deadlock if it is the only thread running on the machine.
-					
-				\part
-					Here we apply the same logic than above if only one thread Thread1 calls that lock method then it will remain stuck there while other thread may still run other methods but it will remain stuck and starve unless a second thread tries to access the same lock method on the same lock object.
-			\end{parts}
+		\begin{parts}
+			\part
+			False, LockThree does not achieve mutual exclusion. Consider the following example: Thread1 calls the lock method first, so busy is true and turn equal 1 which is equal to Thread1 id. Hence that thread is suck in the while loop. 
+			
+			Thread2 comes in changing turn to 2 so Thread1 enters the critical section while Thread2 gets stuck in the while loop of the lock method.
+			
+			Then Thread3 comes in changing the turn variable to 3 which allows Thread2 to enter the critical section while Thread1 is still executing it. Hence at this step we no longer achieve mutual exclusion.
+			
+			Basically, the busy-wait loop requires both conditions to be true, yet it is only ever the "turn" of one thread, which means none of the other threads will busy-wait.
+			
+			\part
+			This protocol is not deadlock free as if we have only 1 thread: Thread1 entering the lock method it will get stuck in the while loop and while no other thread comes along to change the value of turn it will remain stuck there which can cause a deadlock if it is the only thread running on the machine.
+			
+			\part
+			Here we apply the same logic than above if only one thread Thread1 calls that lock method then it will remain stuck there while other thread may still run other methods but it will remain stuck and starve unless a second thread tries to access the same lock method on the same lock object.
+		\end{parts}
 		\newpage
 		\question
-			Fig 2, is sequentially consistent as we can have the following execution since we are allowed to execute different Thread methods at different times regardless of when they were called:
-			\begin{figure}[h!]
-				\centering
-				\includegraphics[scale=0.4]{Fig2Sequential}
-			\end{figure}
-			
-			However Fig 2 is not linearizable as r.write(3) in thread C must happen before r.read(2) in thread B. Yet r.read(2) in thread C must happen before r.write(2) in thread A. Which forces the value of r to be updated to 2 before being updated to 3 which makes it impossible to read 3 after that stage.
-			
-			Fig3 can do neither of both as thread B writes 1 then read 2 and thread C writes 2 then reads 1. if thread B writes first then thread 2 has to overwrite the value with 2 which makes it impossible to read 2 afterwards and vice versa. Since they are no other threads that write anything but these 2 the execution is not linearizable. If the execution is not linearizable then it is also not sequentially consistent either for the same reasons.
+		Fig 2, is sequentially consistent as we can have the following execution since we are allowed to execute different Thread methods at different times regardless of when they were called:
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.4]{Fig2Sequential}
+		\end{figure}
+		
+		However Fig 2 is not linearizable as r.write(3) in thread C must happen before r.read(2) in thread B. Yet r.read(2) in thread C must happen before r.write(2) in thread A. Which forces the value of r to be updated to 2 before being updated to 3 which makes it impossible to read 3 after that stage.
+		
+		Fig3 can do neither of both as thread B writes 1 then read 2 and thread C writes 2 then reads 1. if thread B writes first then thread 2 has to overwrite the value with 2 which makes it impossible to read 2 afterwards and vice versa. Since they are no other threads that write anything but these 2 the execution is not linearizable. If the execution is not linearizable then it is also not sequentially consistent either for the same reasons.
 		
 		\question
-			\begin{parts}
-				\part
-					It is important to know that the write method forces the value of x to be updated before updating the value of v. This means that when v is being updated, x must be equal to 42. Since v in this case is volatile, which means that it gets written to atomically (either it has been updated or it has not). This makes it impossible for the read method to read v as true even if v is being not written to hence it is not possible to divide by 0.
-					
-				\part
-					If they are both volatile the same logic happens, if only x is volatile but not v. Then  
-			\end{parts} 
-	
-	\question
-			\begin{parts}
-				\part
-					6
-			\end{parts} 
-	
-	\question
-			\begin{parts}
-				\part
-					Suppose we have a protocol that can solve binary consensus between two threads.
-					Now, suppose we have $n$ threads, each labeled $t_1, t_2, ..., t_i, ..., t_n$.
-					Then we simply use the protocol to solve binary consensus between $t_i$ and $t_{i+1}$ for all of them.
-					So, the protocol solves consensus between $t_1$ and $t_2$, and then can solve consensus between $t_2$ and $t_3$, and so on. 
-					Logically, this means there is also consensus between $t_3$ and $t_1$, in a transitive way.
-					This way, we know there is always consensus between $t_i$ and $t_j, \forall j < i$.
-			\end{parts}
-	
-	\question
-			\begin{parts}
-				\part
-					8
-			\end{parts} 
+		\begin{parts}
+			\part
+			It is important to know that the write method forces the value of x to be updated before updating the value of v. This means that when v is being updated, x must be equal to 42. Since v in this case is volatile, which means that it gets written to atomically (either it has been updated or it has not). This makes it impossible for the read method to read v as true even if v is being not written to hence it is not possible to divide by 0.
 			
+			\part
+			If they are both volatile the same logic happens, if only x is volatile but not v. Then  
+		\end{parts} 
+		
+		\question
+		\begin{parts}
+			\part
+			No its is not a regular M-valued MRSW register, as no matter where we write the new value the first bit $bit[0]$ will always be true making the reader thread always read $i=1$ during the execution of the write or not. Hence if we write true at byte $x=2$. Then the reader thread will never see it and keep reading $i=1$ even after the write operation finishes.
+	
+			\part
+				The same argument holds for safe M-valued MRSW as even when the write method is not running a reader thread will always read $i=1$ and never read the new value.
+		\end{parts} 
+		
+		\question
+		Suppose we have a protocol that can solve binary consensus between two threads.
+		Now, suppose we have $n$ threads, each labeled $t_1, t_2, ..., t_i, ..., t_n$.
+		Then we simply use the protocol to solve binary consensus between $t_i$ and $t_{i+1}$ for all of them.
+		So, the protocol solves consensus between $t_1$ and $t_2$, and then can solve consensus between $t_2$ and $t_3$, and so on. 
+		Logically, this means there is also consensus between $t_3$ and $t_1$, in a transitive way.
+		This way, we know there is always consensus between $t_i$ and $t_j, \forall j < i$.
+		\question
+		If consensus over k value where $k>2$ for n threads was possible then we can implicitly get binary consensus. Consider consensus over $k=000$ where each 0 represent a bit. Then when getting consensus we can ignore that last 2 bits of k and just focus on the value taken by the first bit. In this case we have generate binary consensus as consensus can be achieved on k but the region of interest is just the first bit. Therefore if we can achieve consensus on $k$ where $k>2$ then we can get binary consensus as well.
 	\end{questions}
 	
 \end{document}
