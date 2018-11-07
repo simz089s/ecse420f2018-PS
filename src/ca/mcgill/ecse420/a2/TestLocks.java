@@ -3,7 +3,6 @@ package ca.mcgill.ecse420.a2;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
-import java.util.Scanner;
 
 public class TestLocks {
   //  private int counter = 0;
