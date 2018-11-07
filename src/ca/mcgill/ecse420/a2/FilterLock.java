@@ -8,7 +8,7 @@ public class FilterLock implements Lock {
 
   int numLevel;
   int[] level; // level[i] for thread i
-  int[] victim; // victim[L] for level L
+  volatile int[] victim; // victim[L] for level L
 
   public FilterLock(int pNumLevel) {
     level = new int[pNumLevel];
@@ -21,7 +21,7 @@ public class FilterLock implements Lock {
 
   @Override
   public void lock() {
-    int threadId = (int) Thread.currentThread().getId() % numLevel;
+    int threadId = (int) (Thread.currentThread().getId() % numLevel);
     for (int L = 1; L < numLevel; L++) {
       level[threadId] = L;
       victim[L] = threadId;
@@ -32,9 +32,9 @@ public class FilterLock implements Lock {
       // One level at a time
       //      level[i] = L; // Announce intention to enter level L
       //      victim[L] = i; // Give priority to anyone but me
-      //      while (/*(there exists k != i && level[k] >= L) && victim[L] == i*/) {} // Wait as long
-      // as someone else is at same or higher level, and I'm designated victim. Thread enters level
-      // L when it completes the loop
+      //      while (/*(there exists k != i && level[k] >= L) && victim[L] == i*/) {} // Wait as
+      // long as someone else is at same or higher level, and I'm designated victim. Thread enters
+      // level L when it completes the loop
     }
   }
 
@@ -53,7 +53,7 @@ public class FilterLock implements Lock {
 
   @Override
   public void unlock() {
-    int threadId = (int) Thread.currentThread().getId() % numLevel;
+    int threadId = (int) (Thread.currentThread().getId() % numLevel);
     level[threadId] = 0;
   }
 
