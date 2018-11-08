@@ -18,11 +18,11 @@ public class TestLocks {
   public static void main(String[] args) {
     for (int i = 0; i < 1; i++) {
       System.out.println("Testing FilterLock");
-      TestLocks filterLocks = new TestLocks(new FilterLock(3), 1);
+      TestLocks filterLocks = new TestLocks(new FilterLock(50), 50);
       filterLocks.testTheLock();
 
       System.out.println("Testing BakeryLock");
-      TestLocks bakeryLock = new TestLocks(new LamportBakeryLock(2), 2);
+      TestLocks bakeryLock = new TestLocks(new LamportBakeryLock(50), 50);
       bakeryLock.testTheLock();
     }
   }
