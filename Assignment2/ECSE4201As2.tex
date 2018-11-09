@@ -21,44 +21,39 @@
 		\question
 		\begin{parts}
 			\part
-			
+				Yes, filter lock allows overtaking another thread an arbitrary number of time. As mentioned in class it is possible that a thread stuck at a level, let's say level 1, may be taken over by another thread asking to enter the same critical section. Consider $t_i$ as being stuck at level 1, then the thread $t_j,t_k$ ask to acquire the lock as well, then $t_j$ sets itself as the victim for level 1, it allows $t_i$ to move up to the next level, but in our stimulation $t_i$ gets preempted straight after. Then, when $t_k$ sets itself as the victim for level 1, $t_j$ moves to the next level since $t_i$ was preempted. $t_j$ sets itself as the victim for level 2 before $t_i$ and so, when $t_i$ starts executing again, it gets stuck at level 2 by setting itself to be the victim of that level, allowing $t_j$ to move to the next level, overtaking $t_i$. If $t_i$ stays preempted, then it may be overtaken by an unlimited number of thread. Thus filter lock is not fair. 
 			\part 
-				No the Bakery lock does not allow some Thread to take over other thread an arbitrary number of time as every time a Thread asks to enter the critical section it gets assigned a priority value (queue number). Hence Thread that asks to access the critical section before another will have a lower queuing number which based on the while loop will make it access the critical section before any other thread with a higher number. Hence there can be no arbitrary taking over of threads with Bakery.
+				No, the Bakery lock does not allow some Thread to take over other thread an arbitrary number of time as every time a Thread asks to enter the critical section it gets assigned a priority value (queue number). Hence a Thread that asks to access the critical section before another will have a lower queuing number which based on the while loop will make it access the critical section before any other thread with a higher number. Hence there can be no arbitrary taking over of threads with Bakery.
 				
 			\part
-				To test the mutual exclusion we propose that we let different number of thread to increment a counter by 1. If at the end of the incrementation mutual exclusion indeed occur then the value of the counter should be equal to the number of thread.
+				To test the mutual exclusion we propose that we let different number of thread to increment a counter by 1. If at the end of the incrementation mutual exclusion indeed occur then the value of the counter should be equal to the number of thread that incremented it.
 		\end{parts}
 		\question
 		\begin{parts}
 			\part
-				LockOne: Regular register means that the old value can be read during an overlap between a read and a write. However a regular register will always read the old value if there is no overlap between a read and a write. In the case of LockOne we know that any thread will first have written to its flag before reading the flag of the other which implies that if Thread 0 enters the critical section it is either because Thread 1 has not written to its flag yet or is currently writing to it. Which means that when that given Thread 1 starts looking at Thread 0 flag, the write of Thread 0 will have already completed which means that it will read the newest value of the flag in this case true all the time until Thread 0 updates its flag again. Hence a regular register still achieves mutual exclusion.
+				LockOne: Regular register means that the old value can be read during an overlap between a read and a write. However a regular register will always read the current value if there is no overlap between a read and a write. In the case of LockOne we know that any thread will first have written to its flag before reading the flag of the other which implies that if Thread 0 enters the critical section it is either because Thread 1 has not written to its flag yet or is currently writing to it. Which means that when that given Thread 1 starts looking at Thread 0 flag, the write of Thread 0 will have already completed which means that it will read the newest value of the flag in this case true all the time until Thread 0 updates its flag again. Hence a regular register still achieves mutual exclusion.
 			
 			\part
-				LockTwo: The same logic applies here as well when Thread 0 sets itself to the victim first it cannot enter the critical section, then when thread 1 sets itself to the victim thread 0 will enter the critical section, since thread 1 completed its write to victim when reading its value directly after, it can no longer read the old value of victim (0 in this case) but must read the newest value (1 in this case) hence it will not enter the critical section. 
+				LockTwo: The same logic applies here as well when Thread 0 sets itself to the victim first it cannot enter the critical section, then when thread 1 sets itself to the victim thread 0 will enter the critical section, since thread 1 completed its write to victim, when reading its value directly after, it can no longer read the old value of victim (0 in this case) but must read the newest value (1 in this case) hence it will not enter the critical section. So mutual exclusion is still achieved.
 		\end{parts}
 		
 		\question
 		\begin{parts}
 			\part
-			False, LockThree does not achieve mutual exclusion. Consider the following example: Thread1 calls the lock method first, so busy is true and turn equal 1 which is equal to Thread1 id. Hence that thread is suck in the while loop. 
+			True for 2 threads but not for $n>2$: assuming there are two threads A and B and that they are in the CS at the same time ($CS_A$ and $CS_B$).
+			This implies that $busy == false$ as the only way to have passed the busy-waiting part is for the loop condition to have been false, which means $busy==false\ ||\ turn!=me$.
+			It cannot have been $turn\ != me$.
+			It can only ever be the turn of a single thread at any time.
+			
+			To enter the for loop a thread must have set $busy = true$ and this happens \textbf{after} the $turn = me$ as such if more than one thread are at the while-loop step, then all except the last to have set $turn = me$ will have $turn\ != me$ relative to them and we know they must have all set $busy = true$.
+			
+			This means that exactly one thread will proceed and unlock, so setting $busy = false$ to allow the thread whose $turn == me\ \&\&\ busy == true$ to proceed from the busy-wait.\newline
+		
+			Now for more than 2 threads this lock does not satisfy mutual: consider the following example: Thread1 calls the lock method first, so busy is true and turn equal 1 which is equal to Thread1 id. Hence that thread is suck in the while loop. 
 			
 			Thread2 comes in changing turn to 2 so Thread1 enters the critical section while Thread2 gets stuck in the while loop of the lock method.
 			
 			Then Thread3 comes in changing the turn variable to 3 which allows Thread2 to enter the critical section while Thread1 is still executing it. Hence at this step we no longer achieve mutual exclusion.
-			
-			Basically, the busy-wait loop requires both conditions to be true, yet it is only ever the "turn" of one thread, which means none of the other threads will busy-wait.\newline
-			
-			Assuming there are two threads A and B and that they are in the CS at the same time ($CS_A$ and $CS_B$).
-        This implies that $busy == false$ as the only way to have passed the busy-waiting part is for the loop condition to have been false, which means $busy==false\ ||\ turn!=me$.
-        It cannot have been $turn\ != me$.
-        It can only ever be the turn of a single thread at any time.
-        
-        To enter the for loop a thread must have set $busy = true$ and this happens \textbf{after} the $turn = me$ as such if more than one thread are at the while-loop step, then all except the last to have set $turn = me$ will have $turn\ != me$ relative to them and we know they must have all set $busy = true$.
-        
-        This means that at least one thread will proceed and unlock, so setting $busy = false$ to allow the thread whose $turn == me\ \&\&\ busy == true$ to proceed from the busy-wait.\newline
-
-        \textbf{Therefore, it is 2-thread mutual exclusive, but not more.} For more than 2 threads, say they all execute the $turn = me$ line consecutively and set $busy = true$ and enter the while-loop consecutively, then as $turn$ can only take the value of one thread, this means $turn\ != me\ \&\&\ busy$ for all the others thus allowing them to break from the while-loop busy-wait and all proceed.
-
 			
 			\part
 			This protocol is not deadlock free as if we have only 1 thread: Thread1 entering the lock method it will get stuck in the while loop and while no other thread comes along to change the value of turn it will remain stuck there which can cause a deadlock if it is the only thread running on the machine.
@@ -92,7 +87,7 @@
 		\question
 		\begin{parts}
 			\part
-			No its is not a regular M-valued MRSW register, as no matter where we write the new value the first bit $bit[0]$ will always be true making the reader thread always read $i=1$ during the execution of the write or not. Hence if we write true at byte $x=2$. Then the reader thread will never see it and keep reading $i=1$ even after the write operation finishes.
+			No its is not a regular M-valued MRSW register, as no matter where we write the new value the first bit $bit[0]$ will always be true making the reader thread always read $i=1$ even when reading concurrently with a write. Hence if we write true at byte $x=2$. Then the reader thread will never see it and keep reading $i=1$ even after the write operation finishes which is not regular as read not overlapping with write should always read the newest value.
 	
 			\part
 				The same argument holds for safe M-valued MRSW as even when the write method is not running a reader thread will always read $i=1$ and never read the new value.
@@ -108,7 +103,7 @@
 			
 			Thus, if we cannot solve binary consensus for two threads, then we cannot for $n$ threads for $n>2$.
 		\question
-			If consensus over k values where $k>2$ for n threads was possible then we can implicitly get binary consensus. Consider consensus over $k=000$ where each 0 represent a bit. Then when getting consensus we can ignore that last 2 bits of k and just focus on the value taken by the first bit. In this case we have generate binary consensus as consensus can be achieved on k but the region of interest is just the first bit. Therefore if we can achieve consensus on $k$ where $k>2$ then we can get binary consensus as well.
+			If consensus over k values where $k>2$ for n threads was possible then we can implicitly get binary consensus. Consider consensus over $k=000$ where each 0 represent a bit. Then when getting consensus we can ignore that last 2 bits of k and just focus on the value taken by the first bit. In this case we have generate binary consensus as consensus can be achieved on k but the region of interest is just the first bit. Therefore if we can achieve consensus on $k$ where $k>2$ then we can get binary consensus as well by just accessing the value range we are interested in.
 	\end{questions}
 	
 \end{document}

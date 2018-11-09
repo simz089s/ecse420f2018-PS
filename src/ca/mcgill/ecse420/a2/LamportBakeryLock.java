@@ -28,7 +28,7 @@ public class LamportBakeryLock implements Lock {
     int threadId = (int) (Thread.currentThread().getId() % numLevel);
     flag[threadId] = true;
 //    label[threadId] = Collections.max(Arrays.asList(label)) + 1;
-    // Find max manually
+    // Find max manually to avoid certain runtime issues we got when testing the lock
     for (int i = 0; i < label.length; i++) {
       if (label[threadId].get() < label[i].get() && threadId != i) {
         label[threadId] = label[i];

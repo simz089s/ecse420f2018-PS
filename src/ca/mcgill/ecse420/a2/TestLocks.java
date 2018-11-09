@@ -16,7 +16,6 @@ public class TestLocks {
   }
 
   public static void main(String[] args) {
-    for (int i = 0; i < 1; i++) {
       System.out.println("Testing FilterLock");
       TestLocks filterLocks = new TestLocks(new FilterLock(50), 50);
       filterLocks.testTheLock();
@@ -24,7 +23,6 @@ public class TestLocks {
       System.out.println("Testing BakeryLock");
       TestLocks bakeryLock = new TestLocks(new LamportBakeryLock(50), 50);
       bakeryLock.testTheLock();
-    }
   }
 
   public void testTheLock() {
@@ -44,7 +42,6 @@ public class TestLocks {
     }
     executor.shutdown();
     while (!executor.isTerminated()) {}
-    ;
     if (cnt[0] == numThread) {
       System.out.println("The Lock worked successfully");
     } else {
