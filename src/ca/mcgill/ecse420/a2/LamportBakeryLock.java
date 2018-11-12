@@ -18,6 +18,7 @@ public class LamportBakeryLock implements Lock {
     label = new AtomicInteger[n];
     for (int i = 0; i < n; i++) {
       flag[i] = false;
+      // Using atomic integer
       label[i] = new AtomicInteger(0);
     }
     numLevel = n;
@@ -27,7 +28,6 @@ public class LamportBakeryLock implements Lock {
   public void lock() {
     int threadId = (int) (Thread.currentThread().getId() % numLevel);
     flag[threadId] = true;
-//    label[threadId] = Collections.max(Arrays.asList(label)) + 1;
     // Find max manually to avoid certain runtime issues we got when testing the lock
     for (int i = 0; i < label.length; i++) {
       if (label[threadId].get() < label[i].get() && threadId != i) {
