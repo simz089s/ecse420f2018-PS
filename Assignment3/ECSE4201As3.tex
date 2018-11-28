@@ -1,0 +1,41 @@
+\documentclass[11pt,letterpaper]{exam}
+\usepackage[latin1]{inputenc}
+\usepackage[left=3.00cm, right=3.00cm, top=3.00cm, bottom=3.00cm]{geometry}% You can change margins here
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage[]{algorithm2e}
+\usepackage{amssymb} % use for therefore
+\usepackage{tabto}
+\usepackage{gensymb}
+\usepackage{graphicx} % resize table
+\usepackage{listings}
+
+\author{Elvric Trombert\\260673394\\Simon Zheng\\260744353}% Put your Student ID here
+\title{Assignment 3 ECSE 420}
+\date{October $10^{\textnormal{th}}$, 2018}
+\begin{document}
+	\maketitle
+	\header{}{Assignment 3 ECSE 420}{}
+	\hrulefill
+	\begin{questions}
+		\question
+		\begin{parts}
+			\part
+				$t_0$ shows that time it takes for reading an element in the array that is in the cache. $L' = (L+(L-1)*s \leq 4$ in this case then all the elements in the array can be cached at once and thus the average access time for each element is the same
+				
+			\part
+				$t_1$ indicates the average access time it takes to read an element from main memory as no new element can be access through the cache.
+			
+			\part
+				1 means that all the element in the array can be cached at once and access in constant time, thus the time does not change. It is the lowest time possible since accessing something from the cache is faster then accessing it from main memory.
+				
+				2 increases exponentially as the more cache miss we get the more time it takes to access an index on our array thus the ratio of cache miss and cache hit is important. The more cache miss we get the greatest our average access time.
+				
+				3, is the case where only one element can be cached at a time thus when accessing the next element we always have to go to main memory which hence causes every access to have the same average access time higher than all the other as accessing something from main memory takes more time than accessing something from the cache.
+				
+			\part
+				In this case the example that shows the correct behavior for Anderson's lock is 3. In this case thread can see that an array index is updated only if that index is in there cache as well to avoid any unnecessary IO calls to the main memory. Anderson's lock could degrade the overall performance of the lock as two thread using the same cache for example would both have to access the main memory to read there respective index as there can only be one index present at a time in the cache when allowing for more index to be present in the cache would allow both thread to read the index faster without competing against each other to access there own index.
+			
+		\end{parts}
+	\end{questions}
+\end{document}
