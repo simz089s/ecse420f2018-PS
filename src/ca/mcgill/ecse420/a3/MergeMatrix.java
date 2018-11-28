@@ -19,7 +19,7 @@ public class MergeMatrix {
     }
 
     int midV = (bot - top) / 2 + top;
-    int midH = (right - left) / 2 + left;
+    //int midH = (right - left) / 2 + left;
 
     Future<?> sumTop = execs.submit(() -> sumUpRows(matrix, top, midV, left, right, resultMatrix));
     Future<?> sumBottom =
@@ -27,9 +27,7 @@ public class MergeMatrix {
     try {
       sumTop.get();
       sumBottom.get();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    } catch (ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();
     }
   }
@@ -77,9 +75,7 @@ public class MergeMatrix {
       mergeBottomRight.get();
 
       // sumUpRows(matrix, left, midH, right, resultMatrix);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    } catch (ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();
     }
   }
