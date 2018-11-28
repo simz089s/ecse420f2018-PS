@@ -19,7 +19,7 @@ public class MergeMatrix {
     }
 
     int midV = (bot - top) / 2 + top;
-    int midH = (right - left) / 2 + left;
+    // int midH = (right - left) / 2 + left;
 
     Future<?> sumTop = execs.submit(() -> sumUpRows(matrix, top, midV, left, right, resultMatrix));
     Future<?> sumBottom =
@@ -27,9 +27,7 @@ public class MergeMatrix {
     try {
       sumTop.get();
       sumBottom.get();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    } catch (ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();
     }
   }
@@ -41,7 +39,9 @@ public class MergeMatrix {
       int bot,
       int left,
       int right,
-      double[] resultMatrix) {
+      double[] resultMatrix,
+      double[] lhs,
+      double[] rhs) {
     if (bot - 1 == top && right - 1 == left) {
       resultMatrix[top] += matrix[top][left] * vector[left];
       return;
@@ -60,16 +60,16 @@ public class MergeMatrix {
 
     Future<?> mergeTopLeft =
         execs.submit(
-            () -> mergeMatrixProductSums(matrix, vector, top, midV, left, midH, resultMatrix));
+            () -> mergeMatrixProductSums(matrix, vector, top, midV, left, midH, resultMatrix, lhs, rhs));
     Future<?> mergeTopRight =
         execs.submit(
-            () -> mergeMatrixProductSums(matrix, vector, top, midV, midH, right, resultMatrix));
+            () -> mergeMatrixProductSums(matrix, vector, top, midV, midH, right, resultMatrix, lhs, rhs));
     Future<?> mergeBottomLeft =
         execs.submit(
-            () -> mergeMatrixProductSums(matrix, vector, midV, bot, left, midH, resultMatrix));
+            () -> mergeMatrixProductSums(matrix, vector, midV, bot, left, midH, resultMatrix, lhs, rhs));
     Future<?> mergeBottomRight =
         execs.submit(
-            () -> mergeMatrixProductSums(matrix, vector, midV, bot, midH, right, resultMatrix));
+            () -> mergeMatrixProductSums(matrix, vector, midV, bot, midH, right, resultMatrix, lhs, rhs));
     try {
       mergeTopLeft.get();
       mergeTopRight.get();
@@ -77,9 +77,7 @@ public class MergeMatrix {
       mergeBottomRight.get();
 
       // sumUpRows(matrix, left, midH, right, resultMatrix);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    } catch (ExecutionException e) {
+    } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();
     }
   }
@@ -87,30 +85,30 @@ public class MergeMatrix {
   public static double[] multiplyMatrix(double[][] matrix, double[] vector) {
     double[][] matrixCopy = Arrays.copyOf(matrix, matrix.length);
     double[] resultMatrix = new double[vector.length];
-    mergeMatrixProductSums(matrixCopy, vector, 0, matrix.length, 0, matrix[0].length, resultMatrix);
-    // sumUpRows(matrix, 0, MATRIX_SIZE, 0, MATRIX_SIZE, resultMatrix);
+    double[] lhs = new double[vector.length];
+    double[] rhs = new double[vector.length];
+    mergeMatrixProductSums(matrixCopy, vector, 0, matrix.length, 0, matrix[0].length, resultMatrix, lhs, rhs);
     execs.shutdown();
-    while(!execs.isTerminated()){}
+    while (!execs.isTerminated()) {}
     return resultMatrix;
   }
 
   public static void main(String[] args) {
     double[] v = generateRandomVector(MATRIX_SIZE);
     double[][] m = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
-//    System.out.println(
-//        Arrays.toString(sequentialMultiplyMatrix(m, v))
-//            .replace("], [", "],\n[")
-//            .replace("[[", "[\n[")
-//            .replace("]]", "]\n]"));
-//    System.out.println(
-//        Arrays.toString(multiplyMatrix(m, v))
-//            .replace("], [", "],\n[")
-//            .replace("[[", "[\n[")
-//            .replace("]]", "]\n]"));
+    //    System.out.println(
+    //        Arrays.toString(sequentialMultiplyMatrix(m, v))
+    //            .replace("], [", "],\n[")
+    //            .replace("[[", "[\n[")
+    //            .replace("]]", "]\n]"));
+    //    System.out.println(
+    //        Arrays.toString(multiplyMatrix(m, v))
+    //            .replace("], [", "],\n[")
+    //            .replace("[[", "[\n[")
+    //            .replace("]]", "]\n]"));
 
     measureParallelmultiplyMatrix(m, v);
     measureSequentialTime(m, v);
-
   }
 
   private static double[][] generateRandomMatrix(int numRows, int numCols) {
@@ -131,7 +129,6 @@ public class MergeMatrix {
     return vector;
   }
 
-
   public static double[] sequentialMultiplyMatrix(double[][] matrix, double[] vector) {
     double[] result = new double[MATRIX_SIZE];
     for (int i = 0; i < MATRIX_SIZE; i++) {
@@ -141,6 +138,7 @@ public class MergeMatrix {
     }
     return result;
   }
+
   public static void measureSequentialTime(double[][] matrix, double[] vector) {
     long startTime = System.currentTimeMillis();
     sequentialMultiplyMatrix(matrix, vector);
