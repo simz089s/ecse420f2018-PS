@@ -1,32 +1,30 @@
 package ca.mcgill.ecse420.a3;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.*;
 
 public class MergeMatrix {
 
-  public static final int MATRIX_SIZE = 200;
+  public static final int MATRIX_SIZE = 2000;
 
   public static ExecutorService execs = Executors.newCachedThreadPool();
 
   public static void sumUpRows(
-      double[][] matrix, int top, int bot, int left, int right, double[] resultMatrix) {
+      double[][] matrix, int top, int bot, int left, int midH, double[] resultMatrix) {
+
     if (bot - 1 == top) {
-      for (int i = left; i < right; i++) {
-        resultMatrix[top] += matrix[top][i];
-      }
+      matrix[top][left] += matrix[top][midH];
       return;
     }
 
     int midV = (bot - top) / 2 + top;
-    // int midH = (right - left) / 2 + left;
 
-    Future<?> sumTop = execs.submit(() -> sumUpRows(matrix, top, midV, left, right, resultMatrix));
-    Future<?> sumBottom =
-        execs.submit(() -> sumUpRows(matrix, midV, bot, left, right, resultMatrix));
+    Future<?> sumTop = execs.submit(() -> sumUpRows(matrix, top, midV, left, midH, resultMatrix));
+    Future<?> sumBot = execs.submit(() -> sumUpRows(matrix, midV, bot, left, midH, resultMatrix));
     try {
       sumTop.get();
-      sumBottom.get();
+      sumBot.get();
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();
     }
@@ -39,19 +37,19 @@ public class MergeMatrix {
       int bot,
       int left,
       int right,
-      double[] resultMatrix,
-      double[] lhs,
-      double[] rhs) {
+      double[] resultMatrix) {
+
     if (bot - 1 == top && right - 1 == left) {
-      resultMatrix[top] += matrix[top][left] * vector[left];
+      matrix[top][left] *= vector[left];
       return;
     } else if (bot - 1 == top) {
-      resultMatrix[top] += matrix[top][left] * vector[left];
-      resultMatrix[top] += matrix[top][left + 1] * vector[left + 1];
+      matrix[top][left] *= vector[left];
+      matrix[top][left + 1] *= vector[left + 1];
+      matrix[top][left] += matrix[top][left + 1];
       return;
     } else if (right - 1 == left) {
-      resultMatrix[top] += matrix[top][left] * vector[left];
-      resultMatrix[top + 1] += matrix[top + 1][left] * vector[left];
+      matrix[top][left] *= vector[left];
+      matrix[top + 1][left] *= vector[left];
       return;
     }
 
@@ -60,55 +58,65 @@ public class MergeMatrix {
 
     Future<?> mergeTopLeft =
         execs.submit(
-            () -> mergeMatrixProductSums(matrix, vector, top, midV, left, midH, resultMatrix, lhs, rhs));
+            () ->
+                mergeMatrixProductSums(
+                    matrix, vector, top, midV, left, midH, resultMatrix));
     Future<?> mergeTopRight =
         execs.submit(
-            () -> mergeMatrixProductSums(matrix, vector, top, midV, midH, right, resultMatrix, lhs, rhs));
+            () ->
+                mergeMatrixProductSums(
+                    matrix, vector, top, midV, midH, right, resultMatrix));
     Future<?> mergeBottomLeft =
         execs.submit(
-            () -> mergeMatrixProductSums(matrix, vector, midV, bot, left, midH, resultMatrix, lhs, rhs));
+            () ->
+                mergeMatrixProductSums(
+                    matrix, vector, midV, bot, left, midH, resultMatrix));
     Future<?> mergeBottomRight =
         execs.submit(
-            () -> mergeMatrixProductSums(matrix, vector, midV, bot, midH, right, resultMatrix, lhs, rhs));
+            () ->
+                mergeMatrixProductSums(
+                    matrix, vector, midV, bot, midH, right, resultMatrix));
     try {
       mergeTopLeft.get();
       mergeTopRight.get();
       mergeBottomLeft.get();
       mergeBottomRight.get();
-
-      // sumUpRows(matrix, left, midH, right, resultMatrix);
+      sumUpRows(matrix, top, bot, left, midH, resultMatrix);
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();
     }
   }
 
   public static double[] multiplyMatrix(double[][] matrix, double[] vector) {
+
     double[][] matrixCopy = Arrays.copyOf(matrix, matrix.length);
     double[] resultMatrix = new double[vector.length];
-    double[] lhs = new double[vector.length];
-    double[] rhs = new double[vector.length];
-    mergeMatrixProductSums(matrixCopy, vector, 0, matrix.length, 0, matrix[0].length, resultMatrix, lhs, rhs);
-    execs.shutdown();
-    while (!execs.isTerminated()) {}
+    mergeMatrixProductSums(
+        matrixCopy, vector, 0, matrix.length, 0, matrix[0].length, resultMatrix);
+    for (int i = 0; i < matrix.length; i++) {
+      resultMatrix[i] = matrix[i][0];
+    }
     return resultMatrix;
   }
 
   public static void main(String[] args) {
+
     double[] v = generateRandomVector(MATRIX_SIZE);
     double[][] m = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
-    //    System.out.println(
-    //        Arrays.toString(sequentialMultiplyMatrix(m, v))
-    //            .replace("], [", "],\n[")
-    //            .replace("[[", "[\n[")
-    //            .replace("]]", "]\n]"));
-    //    System.out.println(
-    //        Arrays.toString(multiplyMatrix(m, v))
-    //            .replace("], [", "],\n[")
-    //            .replace("[[", "[\n[")
-    //            .replace("]]", "]\n]"));
+    System.out.println(
+        Arrays.deepToString(m)
+            .replace("], [", "],\n\t[")
+            .replace("[[", "{\n\t[")
+            .replace("]]", "]\n}"));
+    System.out.println(Arrays.toString(v));
+    System.out.println(Arrays.toString(sequentialMultiplyMatrix(m, v)));
+    System.out.println(Arrays.toString(multiplyMatrix(m, v)));
 
     measureParallelmultiplyMatrix(m, v);
     measureSequentialTime(m, v);
+
+    execs.shutdown();
+    while (!execs.isTerminated()) {}
   }
 
   private static double[][] generateRandomMatrix(int numRows, int numCols) {
@@ -140,18 +148,18 @@ public class MergeMatrix {
   }
 
   public static void measureSequentialTime(double[][] matrix, double[] vector) {
-    long startTime = System.currentTimeMillis();
+    long startTime = System.nanoTime();
     sequentialMultiplyMatrix(matrix, vector);
-    long endTime = System.currentTimeMillis();
+    long endTime = System.nanoTime();
     long runTime = endTime - startTime;
-    System.out.println("Runtime (sequential) : " + runTime);
+    System.out.println("Runtime (sequential) : " + runTime + " ns");
   }
 
   public static void measureParallelmultiplyMatrix(double[][] matrix, double[] vector) {
-    long startTime = System.currentTimeMillis();
+    long startTime = System.nanoTime();
     multiplyMatrix(matrix, vector);
-    long endTime = System.currentTimeMillis();
+    long endTime = System.nanoTime();
     long runTime = endTime - startTime;
-    System.out.println("Runtime (parallel) : " + runTime);
+    System.out.println("Runtime ( parallel ) : " + runTime + " ns");
   }
 }
