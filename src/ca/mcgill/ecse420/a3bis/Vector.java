@@ -25,6 +25,10 @@ public class Vector {
     data[colDisplace + column] = value;
   }
 
+  public void add(int column, double value) {
+    data[colDisplace + column] += value;
+  }
+
   public Vector[] split2() {
     Vector[] splitV = new Vector[2];
     if (dim%2 == 0) {

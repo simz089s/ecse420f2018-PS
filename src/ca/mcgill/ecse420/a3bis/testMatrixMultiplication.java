@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class testMatrixMultiplication {
-  private static int MATRIX_SIZE = 3;
+  private static int MATRIX_SIZE = 110;
   public static ExecutorService exec = Executors.newCachedThreadPool();
 
   public static void main(String[] args) throws ExecutionException, InterruptedException {
@@ -138,8 +138,12 @@ public class testMatrixMultiplication {
     @Override
     public void run() {
       try {
-        if (m.getColumnDim() == 1) {
-          ans.set(0, m.get(0, 0) * v.get(0));
+        if (m.getColumnDim() == 1 || m.getRowDim() == 1) {
+          for (int i = 0; i < m.getRowDim(); i++) {
+            for (int j = 0; j < m.getColumnDim(); j++) {
+              ans.add(i, m.get(i,j)*v.get(j));
+            }
+          }
           return;
         }
         Matrix[][] mSplited = m.split4();

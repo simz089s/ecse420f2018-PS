@@ -42,6 +42,26 @@ public class Matrix {
         newMatrix[1][0] = new Matrix(newRowDim, newColDim, rowDisplace+newRowDim, columnDisplace, data);
         newMatrix[1][1] = new Matrix(newRowDim, newColDim, rowDisplace+newRowDim, columnDisplace+newColDim, data);
       }
+      else {
+        newMatrix[0][0] = new Matrix(newRowDim, newColDim, rowDisplace, columnDisplace, data);
+        newMatrix[0][1] = new Matrix(newRowDim, newColDim+1, rowDisplace, columnDisplace+newColDim, data);
+        newMatrix[1][0] = new Matrix(newRowDim, newColDim, rowDisplace+newRowDim, columnDisplace, data);
+        newMatrix[1][1] = new Matrix(newRowDim, newColDim+1, rowDisplace+newRowDim, columnDisplace+newColDim, data);
+      }
+    }
+    else {
+      if (columnDim%2 == 0) {
+        newMatrix[0][0] = new Matrix(newRowDim, newColDim, rowDisplace, columnDisplace, data);
+        newMatrix[0][1] = new Matrix(newRowDim, newColDim, rowDisplace, columnDisplace+newColDim, data);
+        newMatrix[1][0] = new Matrix(newRowDim+1, newColDim, rowDisplace+newRowDim, columnDisplace, data);
+        newMatrix[1][1] = new Matrix(newRowDim+1, newColDim, rowDisplace+newRowDim, columnDisplace+newColDim, data);
+      }
+      else {
+        newMatrix[0][0] = new Matrix(newRowDim, newColDim, rowDisplace, columnDisplace, data);
+        newMatrix[0][1] = new Matrix(newRowDim, newColDim+1, rowDisplace, columnDisplace+newColDim, data);
+        newMatrix[1][0] = new Matrix(newRowDim+1, newColDim, rowDisplace+newRowDim, columnDisplace, data);
+        newMatrix[1][1] = new Matrix(newRowDim+1, newColDim+1, rowDisplace+newRowDim, columnDisplace+newColDim, data);
+      }
     }
     return newMatrix;
   }
