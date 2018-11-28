@@ -7,26 +7,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class testMatrixMultiplication {
-  private static int MATRIX_SIZE = 110;
+  private static int MATRIX_SIZE = 90;
   public static ExecutorService exec = Executors.newCachedThreadPool();
 
   public static void main(String[] args) throws ExecutionException, InterruptedException {
-    double[] v1 = generateRandomVector(MATRIX_SIZE);
-    double[] v2 = generateRandomVector(MATRIX_SIZE);
+    double[] v = generateRandomVector(MATRIX_SIZE);
     double[][] m = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
-    // System.out.println(Arrays.toString(vectorAddSeq(v1, v2)));
-    // System.out.println(Arrays.toString(vectorAddPar(v1, v2)));
-
-    System.out.println(
-        Arrays.toString(sequentialMultiplyMatrix(m, v1))
-            .replace("], [", "],\n[")
-            .replace("[[", "[\n[")
-            .replace("]]", "]\n]"));
-    System.out.println(
-        Arrays.toString(parallelMultiplyMatrix(m, v1))
-            .replace("], [", "],\n[")
-            .replace("[[", "[\n[")
-            .replace("]]", "]\n]"));
+    measureParallelTime(m, v);
+    measureSequentialTime(m, v);
   }
 
   private static double[][] generateRandomMatrix(int numRows, int numCols) {
@@ -47,26 +35,24 @@ public class testMatrixMultiplication {
     return vector;
   }
 
-  public static double[] vectorAddSeq(double[] v1, double[] v2) {
-    double[] result = new double[MATRIX_SIZE];
-    for (int i = 0; i < MATRIX_SIZE; i++) {
-      result[i] += v1[i] + v2[i];
-    }
-    return result;
+  public static void measureSequentialTime(double[][] matrix, double[] vector) {
+    long startTime = System.nanoTime();
+    sequentialMultiplyMatrixVector(matrix, vector);
+    long endTime = System.nanoTime();
+    long runTime = endTime - startTime;
+    System.out.println("Runtime (sequential) : " + runTime + " ns");
   }
 
-  public static double[] vectorAddPar(double[] v1, double[] v2)
+  public static void measureParallelTime(double[][] matrix, double[] vector)
       throws ExecutionException, InterruptedException {
-    double[] result = new double[MATRIX_SIZE];
-    Vector ans = new Vector(result);
-    Vector v1V = new Vector(v1);
-    Vector v2V = new Vector(v2);
-    exec.submit(new AddVectorTask(v1V, v2V, ans)).get();
-    exec.shutdown();
-    return result;
+    long startTime = System.nanoTime();
+    parallelMultiplyMatrix(matrix, vector);
+    long endTime = System.nanoTime();
+    long runTime = endTime - startTime;
+    System.out.println("Runtime (parallel) : " + runTime + " ns");
   }
 
-  public static double[] sequentialMultiplyMatrix(double[][] matrix, double[] vector) {
+  public static double[] sequentialMultiplyMatrixVector(double[][] matrix, double[] vector) {
     double[] result = new double[MATRIX_SIZE];
     for (int i = 0; i < MATRIX_SIZE; i++) {
       for (int j = 0; j < MATRIX_SIZE; j++) {
@@ -141,7 +127,7 @@ public class testMatrixMultiplication {
         if (m.getColumnDim() == 1 || m.getRowDim() == 1) {
           for (int i = 0; i < m.getRowDim(); i++) {
             for (int j = 0; j < m.getColumnDim(); j++) {
-              ans.add(i, m.get(i,j)*v.get(j));
+              ans.add(i, m.get(i, j) * v.get(j));
             }
           }
           return;

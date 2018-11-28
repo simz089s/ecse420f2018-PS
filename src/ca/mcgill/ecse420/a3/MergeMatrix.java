@@ -58,24 +58,16 @@ public class MergeMatrix {
 
     Future<?> mergeTopLeft =
         execs.submit(
-            () ->
-                mergeMatrixProductSums(
-                    matrix, vector, top, midV, left, midH, resultMatrix));
+            () -> mergeMatrixProductSums(matrix, vector, top, midV, left, midH, resultMatrix));
     Future<?> mergeTopRight =
         execs.submit(
-            () ->
-                mergeMatrixProductSums(
-                    matrix, vector, top, midV, midH, right, resultMatrix));
+            () -> mergeMatrixProductSums(matrix, vector, top, midV, midH, right, resultMatrix));
     Future<?> mergeBottomLeft =
         execs.submit(
-            () ->
-                mergeMatrixProductSums(
-                    matrix, vector, midV, bot, left, midH, resultMatrix));
+            () -> mergeMatrixProductSums(matrix, vector, midV, bot, left, midH, resultMatrix));
     Future<?> mergeBottomRight =
         execs.submit(
-            () ->
-                mergeMatrixProductSums(
-                    matrix, vector, midV, bot, midH, right, resultMatrix));
+            () -> mergeMatrixProductSums(matrix, vector, midV, bot, midH, right, resultMatrix));
     try {
       mergeTopLeft.get();
       mergeTopRight.get();
@@ -91,8 +83,7 @@ public class MergeMatrix {
 
     double[][] matrixCopy = Arrays.copyOf(matrix, matrix.length);
     double[] resultMatrix = new double[vector.length];
-    mergeMatrixProductSums(
-        matrixCopy, vector, 0, matrix.length, 0, matrix[0].length, resultMatrix);
+    mergeMatrixProductSums(matrixCopy, vector, 0, matrix.length, 0, matrix[0].length, resultMatrix);
     for (int i = 0; i < matrix.length; i++) {
       resultMatrix[i] = matrix[i][0];
     }
