@@ -5,7 +5,7 @@ import java.util.concurrent.*;
 
 public class MergeMatrix {
 
-  public static final int MATRIX_SIZE = 21;
+  public static final int MATRIX_SIZE = 200;
 
   public static ExecutorService execs = Executors.newCachedThreadPool();
 
@@ -89,23 +89,28 @@ public class MergeMatrix {
     double[] resultMatrix = new double[vector.length];
     mergeMatrixProductSums(matrixCopy, vector, 0, matrix.length, 0, matrix[0].length, resultMatrix);
     // sumUpRows(matrix, 0, MATRIX_SIZE, 0, MATRIX_SIZE, resultMatrix);
+    execs.shutdown();
+    while(!execs.isTerminated()){}
     return resultMatrix;
   }
 
   public static void main(String[] args) {
     double[] v = generateRandomVector(MATRIX_SIZE);
     double[][] m = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
-    System.out.println(
-        Arrays.toString(sequentialMultiplyMatrix(m, v))
-            .replace("], [", "],\n[")
-            .replace("[[", "[\n[")
-            .replace("]]", "]\n]"));
-    System.out.println(
-        Arrays.toString(multiplyMatrix(m, v))
-            .replace("], [", "],\n[")
-            .replace("[[", "[\n[")
-            .replace("]]", "]\n]"));
-    execs.shutdown();
+//    System.out.println(
+//        Arrays.toString(sequentialMultiplyMatrix(m, v))
+//            .replace("], [", "],\n[")
+//            .replace("[[", "[\n[")
+//            .replace("]]", "]\n]"));
+//    System.out.println(
+//        Arrays.toString(multiplyMatrix(m, v))
+//            .replace("], [", "],\n[")
+//            .replace("[[", "[\n[")
+//            .replace("]]", "]\n]"));
+
+    measureParallelmultiplyMatrix(m, v);
+    measureSequentialTime(m, v);
+
   }
 
   private static double[][] generateRandomMatrix(int numRows, int numCols) {
@@ -126,15 +131,6 @@ public class MergeMatrix {
     return vector;
   }
 
-  public static double[][] sequentialMultiplyMatrixNoAdd(double[][] matrix, double[] vector) {
-    double[][] result = new double[MATRIX_SIZE][MATRIX_SIZE];
-    for (int i = 0; i < MATRIX_SIZE; i++) {
-      for (int j = 0; j < MATRIX_SIZE; j++) {
-        result[i][j] = matrix[i][j] * vector[j];
-      }
-    }
-    return result;
-  }
 
   public static double[] sequentialMultiplyMatrix(double[][] matrix, double[] vector) {
     double[] result = new double[MATRIX_SIZE];
@@ -144,5 +140,20 @@ public class MergeMatrix {
       }
     }
     return result;
+  }
+  public static void measureSequentialTime(double[][] matrix, double[] vector) {
+    long startTime = System.currentTimeMillis();
+    sequentialMultiplyMatrix(matrix, vector);
+    long endTime = System.currentTimeMillis();
+    long runTime = endTime - startTime;
+    System.out.println("Runtime (sequential) : " + runTime);
+  }
+
+  public static void measureParallelmultiplyMatrix(double[][] matrix, double[] vector) {
+    long startTime = System.currentTimeMillis();
+    multiplyMatrix(matrix, vector);
+    long endTime = System.currentTimeMillis();
+    long runTime = endTime - startTime;
+    System.out.println("Runtime (parallel) : " + runTime);
   }
 }
