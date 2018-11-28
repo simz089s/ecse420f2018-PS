@@ -5,11 +5,12 @@ import java.util.concurrent.*;
 
 public class MergeMatrix {
 
-  public static final int MATRIX_SIZE = 20;
+  public static final int MATRIX_SIZE = 21;
 
   public static ExecutorService execs = Executors.newCachedThreadPool();
 
-  public static void sumUpRows(double[][] matrix, int top, int bot, int left, int right, double[] resultMatrix) {
+  public static void sumUpRows(
+      double[][] matrix, int top, int bot, int left, int right, double[] resultMatrix) {
     if (bot - 1 == top) {
       for (int i = left; i < right; i++) {
         resultMatrix[top] += matrix[top][i];
@@ -21,7 +22,8 @@ public class MergeMatrix {
     int midH = (right - left) / 2 + left;
 
     Future<?> sumTop = execs.submit(() -> sumUpRows(matrix, top, midV, left, right, resultMatrix));
-    Future<?> sumBottom = execs.submit(() -> sumUpRows(matrix, midV, bot, left, right, resultMatrix));
+    Future<?> sumBottom =
+        execs.submit(() -> sumUpRows(matrix, midV, bot, left, right, resultMatrix));
     try {
       sumTop.get();
       sumBottom.get();
@@ -33,13 +35,23 @@ public class MergeMatrix {
   }
 
   public static void mergeMatrixProductSums(
-      double[][] matrix, double[] vector, int top, int bot, int left, int right, double[] resultMatrix) {
-    if (bot - 1 == top || right - 1 == left) {
-      for (int i = top; i < bot; i++) {
-        for (int j = left; j < right; j++) {
-          matrix[i][j] *= vector[j];
-        }
-      }
+      double[][] matrix,
+      double[] vector,
+      int top,
+      int bot,
+      int left,
+      int right,
+      double[] resultMatrix) {
+    if (bot - 1 == top && right - 1 == left) {
+      resultMatrix[top] += matrix[top][left] * vector[left];
+      return;
+    } else if (bot - 1 == top) {
+      resultMatrix[top] += matrix[top][left] * vector[left];
+      resultMatrix[top] += matrix[top][left + 1] * vector[left + 1];
+      return;
+    } else if (right - 1 == left) {
+      resultMatrix[top] += matrix[top][left] * vector[left];
+      resultMatrix[top + 1] += matrix[top + 1][left] * vector[left];
       return;
     }
 
@@ -47,21 +59,24 @@ public class MergeMatrix {
     int midH = (right - left) / 2 + left;
 
     Future<?> mergeTopLeft =
-        execs.submit(() -> mergeMatrixProductSums(matrix, vector, top, midV, left, midH, resultMatrix));
+        execs.submit(
+            () -> mergeMatrixProductSums(matrix, vector, top, midV, left, midH, resultMatrix));
     Future<?> mergeTopRight =
-        execs.submit(() -> mergeMatrixProductSums(matrix, vector, top, midV, midH, right, resultMatrix));
+        execs.submit(
+            () -> mergeMatrixProductSums(matrix, vector, top, midV, midH, right, resultMatrix));
     Future<?> mergeBottomLeft =
-        execs.submit(() -> mergeMatrixProductSums(matrix, vector, midV, bot, left, midH, resultMatrix));
+        execs.submit(
+            () -> mergeMatrixProductSums(matrix, vector, midV, bot, left, midH, resultMatrix));
     Future<?> mergeBottomRight =
-        execs.submit(() -> mergeMatrixProductSums(matrix, vector, midV, bot, midH, right, resultMatrix));
+        execs.submit(
+            () -> mergeMatrixProductSums(matrix, vector, midV, bot, midH, right, resultMatrix));
     try {
       mergeTopLeft.get();
       mergeTopRight.get();
       mergeBottomLeft.get();
       mergeBottomRight.get();
 
-      // sumUpRows(matrix, top, midV, left, right, resultMatrix);
-      // sumUpRows(matrix, midV, bot, left, right, resultMatrix);
+      // sumUpRows(matrix, left, midH, right, resultMatrix);
     } catch (InterruptedException e) {
       e.printStackTrace();
     } catch (ExecutionException e) {
@@ -73,7 +88,7 @@ public class MergeMatrix {
     double[][] matrixCopy = Arrays.copyOf(matrix, matrix.length);
     double[] resultMatrix = new double[vector.length];
     mergeMatrixProductSums(matrixCopy, vector, 0, matrix.length, 0, matrix[0].length, resultMatrix);
-    sumUpRows(matrix, 0, MATRIX_SIZE, 0, MATRIX_SIZE, resultMatrix);
+    // sumUpRows(matrix, 0, MATRIX_SIZE, 0, MATRIX_SIZE, resultMatrix);
     return resultMatrix;
   }
 
