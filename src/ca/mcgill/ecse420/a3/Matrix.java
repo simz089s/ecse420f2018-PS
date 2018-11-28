@@ -1,4 +1,4 @@
-package ca.mcgill.ecse420.a3bis;
+package ca.mcgill.ecse420.a3;
 
 public class Matrix {
   int rowDim;

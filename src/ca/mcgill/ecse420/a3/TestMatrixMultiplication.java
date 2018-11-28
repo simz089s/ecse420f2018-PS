@@ -1,12 +1,11 @@
-package ca.mcgill.ecse420.a3bis;
+package ca.mcgill.ecse420.a3;
 
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class testMatrixMultiplication {
+public class TestMatrixMultiplication {
   private static int MATRIX_SIZE = 90;
   public static ExecutorService exec = Executors.newCachedThreadPool();
 
