@@ -14,6 +14,8 @@ public class TestMatrixMultiplication {
     double[][] m = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
     measureParallelTime(m, v);
     measureSequentialTime(m, v);
+    //System.out.println(Arrays.toString(sequentialMultiplyMatrixVector(m,v)));
+    //System.out.println(Arrays.toString(parallelMultiplyMatrix(m, v)));
   }
 
   private static double[][] generateRandomMatrix(int numRows, int numCols) {

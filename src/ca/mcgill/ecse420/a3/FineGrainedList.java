@@ -16,9 +16,15 @@ public class FineGrainedList<Item> {
     LockableNode pred = head;
     try {
       LockableNode<Item> curr = pred.next;
+      /* if the list only contains the head then check the head key
+       * if the head key == the item key then return true else we have to iterate through the list
+       */
+      if (curr == null || pred.key == key) {
+        return pred.key == key;
+      }
       curr.lock();
       try {
-        while (curr.key < key) {
+        while (curr.key < key && curr.next != null) {
           pred.unlock();
           pred = curr;
           curr = curr.next;
@@ -35,7 +41,42 @@ public class FineGrainedList<Item> {
     }
     return false;
   }
+
+  // non concurrent add method
+  public boolean add(Item item) {
+    if (head.next == null) {
+      if (head.key < item.hashCode()) {
+        head.next = new LockableNode<>(item);
+        return true;
+      }
+      LockableNode<Item> newNode = new LockableNode<>(item);
+      newNode.next = head;
+      head = newNode;
+      return true;
+    }
+    LockableNode<Item> pre = head;
+    LockableNode<Item> cur = head.next;
+
+    while (cur != null) {
+      if (cur.key < item.hashCode()) {
+        pre = cur;
+        cur = pre.next;
+      }
+      else if (cur.key == item.hashCode()) {
+        return false;
+      }
+      else {
+        LockableNode<Item> newItem = new LockableNode<>(item);
+        pre.next = newItem;
+        newItem.next = cur;
+        return true;
+      }
+    }
+
+    pre.next = new LockableNode<>(item);
+    return true;
   }
+}
 
 class LockableNode<Item> {
   protected Item item;
