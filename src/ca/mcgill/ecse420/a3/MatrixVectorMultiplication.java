@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class MatrixVectorMultiplication {
-  private static int MATRIX_SIZE = 20000;
+  private static int MATRIX_SIZE = 2000;
   public static ExecutorService exec = Executors.newCachedThreadPool();
 
   public static void main(String[] args) throws ExecutionException, InterruptedException {
@@ -67,7 +67,7 @@ public class MatrixVectorMultiplication {
       throws ExecutionException, InterruptedException {
     Matrix m = new Matrix(matrix);
     Vector v = new Vector(vector);
-    double[] ans = new double[v.getDim()];
+    double[] ans = new double[v.getDim()]; // To put the Vector into a corresponding double array
     Vector vAns = new Vector(ans);
     exec.submit(new multiplyMatrixVectorTask(m, v, vAns)).get();
     exec.shutdown();
@@ -77,7 +77,7 @@ public class MatrixVectorMultiplication {
   static class AddVectorTask implements Runnable {
     private Vector left;
     private Vector right;
-    private Vector ans;
+    private Vector ans; // Left and right sides are merged/added together into one
 
     public AddVectorTask(Vector left, Vector right, Vector ans) {
       this.left = left;
@@ -88,10 +88,10 @@ public class MatrixVectorMultiplication {
     @Override
     public void run() {
       try {
-        if (left.getDim() == 1) {
-          ans.set(0, left.get(0) + right.get(0));
-          return;
+        if (left.getDim() == 1) { // Base case
+          ans.set(0, left.get(0) + right.get(0)); // Put sum into corresponding vector element
         } else {
+          // Do the task recursively by halving into top and bottom and waiting for their results (promises)
           Vector[] leftSplit = left.split2();
           Vector[] rightSplit = right.split2();
           Vector[] ansSplit = ans.split2();
@@ -125,7 +125,7 @@ public class MatrixVectorMultiplication {
     @Override
     public void run() {
       try {
-        if (m.getColumnDim() == 250 || m.getRowDim() == 250) {
+        if (m.getColumnDim() == 250 || m.getRowDim() == 250) { // Base case set to 250 (see report for explanation)
           for (int i = 0; i < m.getRowDim(); i++) {
             for (int j = 0; j < m.getColumnDim(); j++) {
               ans.add(i, m.get(i, j) * v.get(j));
