@@ -10,7 +10,7 @@ public class TestContains {
   public static void main(String[] args) {
     Random ran = new Random();
     int bound = 2;
-    FineGrainedList<Integer> intList = new FineGrainedList<>(-1);
+    FineGrainedList<Integer> intList = new FineGrainedList<>();
     for (int i = 0; i < 15; i++) {
       /* chance to add a number depends on previous
        * number added starting at 1/2 then 1/3 and so on as we add

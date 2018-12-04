@@ -35,7 +35,11 @@
 				
 			\part
 				In this case the example that shows the correct behavior for Anderson's lock is 3. In this case thread can see that an array index is updated only if that index is in there cache as well to avoid any unnecessary IO calls to the main memory. Anderson's lock could degrade the overall performance of the lock as two thread using the same cache for example would both have to access the main memory to read there respective index as there can only be one index present at a time in the cache when allowing for more index to be present in the cache would allow both thread to read the index faster without competing against each other to access there own index.
-			
 		\end{parts}
+		
+		\question 
+			The TestContains class is the one that will test whether contains work appropriately. After talking to the TA, he mentioned that since the only concurrent part that we had to achieve was the contains method to test it the add method did not need to be concurrent.
+			
+			Our test method performs the following: add at random different integers to the list. Note that the integer 0 is always added to the list as the constructor must takes a parameter to set the first node.
 	\end{questions}
 \end{document}

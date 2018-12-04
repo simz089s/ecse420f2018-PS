@@ -6,11 +6,14 @@ import java.util.concurrent.locks.ReentrantLock;
 public class FineGrainedList<Item> {
   private LockableNode<Item> head;
 
-  public FineGrainedList(Item item) {
-    head = new LockableNode<>(item);
+  public FineGrainedList() {
+    head = null;
   }
 
   public boolean contains(Item item) {
+    if (head == null) {
+      return false;
+    }
     int key = item.hashCode();
     head.lock();
     LockableNode pred = head;
@@ -44,16 +47,28 @@ public class FineGrainedList<Item> {
 
   // non concurrent add method
   public boolean add(Item item) {
+    // initializing the head if the list is null
+    if (head == null) {
+      head = new LockableNode<>(item);
+      return true;
+    }
+    // edge case when the list only contains 1 node
     if (head.next == null) {
       if (head.key < item.hashCode()) {
         head.next = new LockableNode<>(item);
         return true;
       }
-      LockableNode<Item> newNode = new LockableNode<>(item);
-      newNode.next = head;
-      head = newNode;
-      return true;
+      else if (head.key == item.hashCode()) {
+        return false;
+      }
+      else {
+        LockableNode<Item> newNode = new LockableNode<>(item);
+        newNode.next = head;
+        head = newNode;
+        return true;
+      }
     }
+
     LockableNode<Item> pre = head;
     LockableNode<Item> cur = head.next;
 
