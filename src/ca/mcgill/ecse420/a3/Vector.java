@@ -18,7 +18,7 @@ public class Vector {
   }
 
   public double get(int column) {
-   return data[column+colDisplace];
+    return data[column + colDisplace];
   }
 
   public void set(int column, double value) {
@@ -31,16 +31,20 @@ public class Vector {
 
   public Vector[] split2() {
     Vector[] splitV = new Vector[2];
-    if (dim%2 == 0) {
-      int newDim = dim/2;
+    // case where the split creats 2 even part
+    if (dim % 2 == 0) {
+      int newDim = dim / 2;
       splitV[0] = new Vector(data, colDisplace, newDim);
-      splitV[1] = new Vector(data, colDisplace+newDim, newDim);
+      splitV[1] = new Vector(data, colDisplace + newDim, newDim);
     }
+    /* case where the split is not even:
+     * The bottom part of the split in the vector will have 1 extra entry than the top part
+     */
     else {
-      int newDim = dim/2;
+      int newDim = dim / 2;
       splitV[0] = new Vector(data, colDisplace, newDim);
-      splitV[1] = new Vector(data, colDisplace+newDim, newDim+1);
-   }
+      splitV[1] = new Vector(data, colDisplace + newDim, newDim + 1);
+    }
     return splitV;
   }
 

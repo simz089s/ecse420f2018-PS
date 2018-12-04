@@ -35,7 +35,10 @@ public class Matrix {
     Matrix[][] newMatrix = new Matrix[2][2];
     int newRowDim = rowDim / 2;
     int newColDim = columnDim / 2;
+
+    // Case where the matrix has an even number of rows
     if (rowDim % 2 == 0) {
+      // Case where the matrix has an even number of columns
       if (columnDim % 2 == 0) {
         newMatrix[0][0] = new Matrix(newRowDim, newColDim, rowDisplace, columnDisplace, data);
         newMatrix[0][1] =
@@ -45,7 +48,11 @@ public class Matrix {
         newMatrix[1][1] =
             new Matrix(
                 newRowDim, newColDim, rowDisplace + newRowDim, columnDisplace + newColDim, data);
-      } else {
+      }
+      /* Case where the matrix has an odd number of columns the
+       * the top right and bottom right matrices will then have an extra column
+       */
+      else {
         newMatrix[0][0] = new Matrix(newRowDim, newColDim, rowDisplace, columnDisplace, data);
         newMatrix[0][1] =
             new Matrix(newRowDim, newColDim + 1, rowDisplace, columnDisplace + newColDim, data);
@@ -59,7 +66,11 @@ public class Matrix {
                 columnDisplace + newColDim,
                 data);
       }
-    } else {
+    }
+    /* Case where the matrix has an odd number of rows the
+     * the bottom left and bottom right matrices will then have an extra row
+     */
+    else {
       if (columnDim % 2 == 0) {
         newMatrix[0][0] = new Matrix(newRowDim, newColDim, rowDisplace, columnDisplace, data);
         newMatrix[0][1] =
@@ -73,7 +84,11 @@ public class Matrix {
                 rowDisplace + newRowDim,
                 columnDisplace + newColDim,
                 data);
-      } else {
+      }
+      /* Case where the matrix has an odd number of columns the
+       * the top right and bottom right matrices will then have an extra column
+       */
+      else {
         newMatrix[0][0] = new Matrix(newRowDim, newColDim, rowDisplace, columnDisplace, data);
         newMatrix[0][1] =
             new Matrix(newRowDim, newColDim + 1, rowDisplace, columnDisplace + newColDim, data);

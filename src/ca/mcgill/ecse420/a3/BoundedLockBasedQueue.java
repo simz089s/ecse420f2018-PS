@@ -49,7 +49,7 @@ public class BoundedLockBasedQueue<Item> {
     boolean mustWakeEnq;
     deqLock.lock();
     try {
-      while (tail - head == 0) {
+      while (tail == head) {
         System.out.println("Queue is Empty");
         notEmpty.await();
       }
