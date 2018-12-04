@@ -5,8 +5,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class TestMatrixMultiplication {
-  private static int MATRIX_SIZE = 90;
+public class MatrixVectorMultiplication {
+  private static int MATRIX_SIZE = 20000;
   public static ExecutorService exec = Executors.newCachedThreadPool();
 
   public static void main(String[] args) throws ExecutionException, InterruptedException {
@@ -69,7 +69,7 @@ public class TestMatrixMultiplication {
     Vector v = new Vector(vector);
     double[] ans = new double[v.getDim()];
     Vector vAns = new Vector(ans);
-    exec.submit(new multiplyMatrixVectorClass(m, v, vAns)).get();
+    exec.submit(new multiplyMatrixVectorTask(m, v, vAns)).get();
     exec.shutdown();
     return ans;
   }
@@ -107,14 +107,14 @@ public class TestMatrixMultiplication {
     }
   }
 
-  static class multiplyMatrixVectorClass implements Runnable {
+  static class multiplyMatrixVectorTask implements Runnable {
     private Matrix m;
     private Vector v;
     private Vector ans;
     private Vector left;
     private Vector right;
 
-    public multiplyMatrixVectorClass(Matrix m, Vector v, Vector ans) {
+    public multiplyMatrixVectorTask(Matrix m, Vector v, Vector ans) {
       this.m = m;
       this.v = v;
       this.ans = ans;
@@ -125,7 +125,7 @@ public class TestMatrixMultiplication {
     @Override
     public void run() {
       try {
-        if (m.getColumnDim() == 1 || m.getRowDim() == 1) {
+        if (m.getColumnDim() == 250 || m.getRowDim() == 250) {
           for (int i = 0; i < m.getRowDim(); i++) {
             for (int j = 0; j < m.getColumnDim(); j++) {
               ans.add(i, m.get(i, j) * v.get(j));
@@ -138,13 +138,13 @@ public class TestMatrixMultiplication {
         Vector[] leftSplit = left.split2();
         Vector[] rightSplit = right.split2();
         Future<?> topLeft =
-            exec.submit(new multiplyMatrixVectorClass(mSplited[0][0], vSplited[0], leftSplit[0]));
+            exec.submit(new multiplyMatrixVectorTask(mSplited[0][0], vSplited[0], leftSplit[0]));
         Future<?> topRight =
-            exec.submit(new multiplyMatrixVectorClass(mSplited[0][1], vSplited[1], rightSplit[0]));
+            exec.submit(new multiplyMatrixVectorTask(mSplited[0][1], vSplited[1], rightSplit[0]));
         Future<?> bottomLeft =
-            exec.submit(new multiplyMatrixVectorClass(mSplited[1][0], vSplited[0], leftSplit[1]));
+            exec.submit(new multiplyMatrixVectorTask(mSplited[1][0], vSplited[0], leftSplit[1]));
         Future<?> bottomRight =
-            exec.submit(new multiplyMatrixVectorClass(mSplited[1][1], vSplited[1], rightSplit[1]));
+            exec.submit(new multiplyMatrixVectorTask(mSplited[1][1], vSplited[1], rightSplit[1]));
         topLeft.get();
         topRight.get();
         bottomLeft.get();

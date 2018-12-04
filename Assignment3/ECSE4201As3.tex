@@ -12,7 +12,6 @@
 
 \author{Elvric Trombert\\260673394\\Simon Zheng\\260744353}% Put your Student ID here
 \title{Assignment 3 ECSE 420}
-\date{October $10^{\textnormal{th}}$, 2018}
 \begin{document}
 	\maketitle
 	\header{}{Assignment 3 ECSE 420}{}
@@ -21,25 +20,122 @@
 		\question
 		\begin{parts}
 			\part
-				$t_0$ shows that time it takes for reading an element in the array that is in the cache. $L' = (L+(L-1)*s \leq 4$ in this case then all the elements in the array can be cached at once and thus the average access time for each element is the same
+				$t_0$ shows that time it takes for reading an element in the array that is in the cache. $L'$ is the number of elements that can be contained in cache simultaneously:
+				if $s=0$ then $L'=4$.
+				If $s=1,2$ then $L'=2$.
+				If $s>2$ then $L'=1$.
 				
 			\part
-				$t_1$ indicates the average access time it takes to read an element from main memory as no new element can be access through the cache.
+				$t_1$ indicates the time it takes to read an element from main memory as the next index cannot be access through the cache.
 			
 			\part
-				1 means that all the element in the array can be cached at once and access in constant time, thus the time does not change. It is the lowest time possible since accessing something from the cache is faster then accessing it from main memory.
+				1 means that all the element in the array can be cached at once and accessed in constant time, thus the time does not change. It is the lowest time possible since accessing something from the cache is faster then accessing it from main memory.
 				
-				2 increases exponentially as the more cache miss we get the more time it takes to access an index on our array thus the ratio of cache miss and cache hit is important. The more cache miss we get the greatest our average access time.
+				2 increases exponentially as the more cache miss we get the more time it takes to access an index on our array thus the ratio of cache miss and cache hit increases. The more cache miss we get the greater our average access time.
 				
-				3, is the case where only one element can be cached at a time thus when accessing the next element we always have to go to main memory which hence causes every access to have the same average access time higher than all the other as accessing something from main memory takes more time than accessing something from the cache.
+				3, is the case where only one element can be cached at a time thus when accessing the next element we always have to go to main memory which hence causes every access to have the same average access time. It is highest average access time as accessing something from main memory takes more time than accessing something from the cache.
 				
 			\part
-				In this case the example that shows the correct behavior for Anderson's lock is 3. In this case thread can see that an array index is updated only if that index is in there cache as well to avoid any unnecessary IO calls to the main memory. Anderson's lock could degrade the overall performance of the lock as two thread using the same cache for example would both have to access the main memory to read there respective index as there can only be one index present at a time in the cache when allowing for more index to be present in the cache would allow both thread to read the index faster without competing against each other to access there own index.
+				Padding technique in ALock degrades the overall performance of the lock as in order get the lock, each thread must go to main memory to retrieve the value in the array index associated with it, since that information cannot be kept in the cache. Thus this slows down the lock as in order to get the lock each thread will make a call to main memory which takes more time than accessing its cache.
 		\end{parts}
 		
 		\question 
-			The TestContains class is the one that will test whether contains work appropriately. After talking to the TA, he mentioned that since the only concurrent part that we had to achieve was the contains method to test it the add method did not need to be concurrent.
+			The class implementing the contains is called BoundedLockBasedQueue.java.
 			
-			Our test method performs the following: add at random different integers to the list. Note that the integer 0 is always added to the list as the constructor must takes a parameter to set the first node.
+			The TestContains class is the one that will test whether contains work appropriately. After talking to the TA, he mentioned that since the only concurrent part that we had to achieve was in the contains method. Thus in order to test the contains method we added an add method that itself however is not concurrent.
+			
+			Our test method performs the following: we randomly add integers from 0 to 14 where the chances of adding a new number after adding a new number decreases (at first they are 1/2 then after adding the first element 1/3 and so on). This ensure that upon every try we get different integers on different list sizes (ensuring that the results cannot be hard coded and work on different lists with different sizes and item values). When a number is added to the list we mention it in a print statement. 
+			
+			Then we concurrently launch all the contains call on the integers from 0 to 14 and print out the result of the contains method. To make the results more easily readable we compare the contains output with an array that is set to false when the number $i$ was not added to the list and true when the number was added to the list. We then print at "Test passed" or "Test fails" based on these results at the end. 
+			
+			Our implementation is correct since our test passes which means that the lock are correctly acquired and released by the method and that the implementation does not cause any false reads or deadlocks. This is due to the fact that we acquire the lock of the previous and current nodes which ensure that the current node we are reading is part of the list, as to remove or add a node in the list these two same locks must also be acquired by the add or remove method for them to remove the current node we are accessing or add a new node for the add method.
+			
+		\question 
+			The class is called BoundedLockBasedQueue.java
+			\begin{parts}
+				\setcounter{partno}{1}
+				\part
+			\end{parts}
+		\question
+			The test class is called MatrixVectorMultiplication.java
+			\begin{parts}
+				\setcounter{partno}{2}
+				\part Given that we run into the following error message "Exception in thread main java.lang.OutOfMemoryError: Java heap space" when running the code with 2000 side splitting the matrix up to 1x1 or 2x1 or 1x2. We run the code on the server with 2000 matrix splitting the matrix until it reaches 250. With this the parallel running time is 1181563085 nano seconds and the sequential time is 31571979 nano seconds. Here the parallel runtime is greater than the sequential we believe that this is due to the fact that even with the split to 250 the 8 cores provided by the server take too much time to divide the work than just actually solving the multiplication thus being slower than the sequential part. This we get a "speed up" of $\frac{31571979}{1181563085} = 0.0267$ which is a slow down again this is due to the fact that our operation technically requires a lot more thread than just 8 to perform faster than the sequential application.	
+				
+				\part
+					\begin{subparts}
+						\subpart
+							Calculate the work of the add function for vectors let $n = 2^m$ :
+							\begin{align*}
+								A_1(2^m) &= 2^1A_v(2^{m-1}) + \Theta(1)\\
+								A_1(2^{m-1}) &= 2^1A_v(2^{m-2}) + \Theta(1)\\
+								A_1(2^{m-2}) &= 2^1A_v(2^{m-3}) + \Theta(1)\\
+								A_1(2^m) &= 2^2A_v(2^{m-2}) + 2\Theta(1) + \Theta(1)\\
+								A_1(2^m) &= 2^3A_v(2^{m-3}) + 4\Theta(1) + 2\Theta(1) + \Theta(1)\\
+								2^0+2^1+2^2+2^3+..+2^m &= 2^{m+1}-1\\
+								A_1(2^m) &= 2^m*1 + (2^{m+1}-1)\Theta(1)\\
+								A_1(n) &\approx n + 2n\Theta(1)\\
+								\Theta(n) &= 3n\\								
+							\end{align*}
+							
+							Calculating the critical path length:
+							\begin{align*}
+								A_\infty(2^m) &= A_v(2^{m-1}) + \Theta(1)\\
+								A_\infty(2^{m-1}) &= A_v(2^{m-2}) + \Theta(1)\\
+								A_\infty(2^{m-2}) &= A_v(2^{m-3}) + \Theta(1)\\
+								A_\infty(2^m) &= A_v(2^{m-2}) + 1\Theta(1) + \Theta(1)\\
+								A_\infty(2^m) &= A_v(2^{m-3}) + 1\Theta(1) + 1\Theta(1) + 1\Theta(1)\\
+								A_\infty(2^m) &= 1 + m\Theta(1)\\
+								A_\infty(n) &\approx m\Theta(1)\\
+								\Theta(\log(n)) &= m\\								
+							\end{align*}
+						\newpage	
+						\subpart
+							Calculate the work of the multiply method for matrix vector multiplication $n = 2^m$:
+							\begin{align*}
+								M_1(2^m) &= 2^2M_v(2^{m-1}) + \Theta(2^m)\\
+								M_1(2^{m-1}) &= 2^2M_v(2^{m-2}) + \Theta(2^{m-1})\\
+								M_1(2^{m-2}) &= 2^2M_v(2^{m-3}) + \Theta(2^{m-2})\\
+								M_1(2^m) &= 2^4M_v(2^{m-2}) + 2^2\Theta(2^{m-1}) + \Theta(2^m)\\
+								M_1(2^m) &= 2^6M_v(2^{m-3}) + 2^4\Theta(2^{m-2}) + 2^2\Theta(2^{m-1}) + \Theta(2^m)\\
+								M_1(2^m) &\approx 2^6M_v(2^{m-3}) + 2^2*2^m + 2*2^m + 2^m\\
+								M_1(2^m) &\approx 2^6M_v(2^{m-3}) + (2^2 + 2 + 2^0)2^m\\
+								2^0+2^1+2^2+2^3+..+2^m &= 2^{m+1}-1\\
+								M_1(2^m) &\approx (2^m)^2 + (2^{m+1}-1)2^m\\
+								M_1(2^m) &\approx (2^m)^2 + 2^{2m+1}-2^m\\
+								M_1(n) &\approx n^2 + n^2*2-n\\
+								\Theta(n^2) &= 3n^2-n\\								
+							\end{align*}
+							
+							\newpage
+							Calculate the critical path the multiply method for matrix vector multiplication $n = 2^m$:
+							\begin{align*}
+								M_\infty(2^m) &= M_v(2^{m-1}) + \Theta(m)\\
+								M_\infty(2^{m-1}) &= M_v(2^{m-2}) + \Theta(m-1)\\
+								M_\infty(2^{m-2}) &= M_v(2^{m-3}) + \Theta(m-2)\\
+								M_\infty(2^m) &=  M_v(2^{m-3}) + \Theta(m-2) + \Theta(m-1) + \Theta(m)\\
+								M_\infty(2^m) &\approx M_v(2^{m-3}) + m-2 + m-1 + m\\
+								1+2+3+4+..+n &= \frac{(n+1)*n}{2}\\
+								M_\infty(2^m) &\approx \frac{(m+1)*m}{2} \\
+								\Theta(\log(n)^2) &= \frac{m^2+m}{2}\\								
+							\end{align*}
+							
+							\subpart
+								The parallelism achieved is therefore: 
+								\begin{align*}
+									\frac{M_1}{M_\infty} = \Theta(\frac{n^2}{\log(n)^2})
+								\end{align*}
+								This is less then the $\Theta$ running time required for matrix multiplication which makes sense since, every time we multiply, we "create" 4 new threads compared to 8 with matrix multiplication, thus, in our case, for a $2000 \times 2000$ matrix, we would need about $364770$ cores to run the multiplication at its fastest speed. More cores would not improve the speed up.
+								
+								\quad Discussing now the implementation for the sequential time, it is two basic for-loops that just iterate through the matrix and the vector and perform the multiplications.
+								
+								For the parallel part, we followed the approach given to us in class for the matrix multiplication. 
+								
+								\quad We created a Vector and Matrix class and added $split$ methods to be able to "virtually" split a vector in half and a matrix in 4 without having to copy the matrix entries into a smaller matrix over and over again (the idea of doing this with a $split$ method in its own class as opposed to inline came from the book). Then, using these methods, for the $add$ Task we cut each vector into 2 pieces recursively passing it to the executor as submissions, until we reach a 1 by 1 vector. Then, we perform the addition. 
+								
+								\quad For the matrix vector multiplication, we created two new vectors that will hold the result of the multiplication and addition to the left and right side of the matrix, independently. Then, we split the matrix in 4 and split the two new vectors in 2 (along with the vector the matrix is being multiplied with). We then recursively pass each quadrant, with its corresponding answer vector-half along with the multiplication vector-half. Once done, we pass the two answer vectors with the final answer vector to the add vector task. 
+								
+					\end{subparts}
+			\end{parts}	
 	\end{questions}
 \end{document}
