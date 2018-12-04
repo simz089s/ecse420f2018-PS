@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class testBoundedQueue {
-    private static BoundedLockBasedQueue<Integer> syncQueue = new BoundedLockBasedQueue<>(10);
+    private static TryTestAndSet<Integer> syncQueue = new TryTestAndSet<>(10);
     private static ExecutorService executor = Executors.newCachedThreadPool();
   public static void main(String[] args) {
     Random rand = new Random();
@@ -35,7 +35,7 @@ public class testBoundedQueue {
       try {
         syncQueue.enqueue(num);
         System.out.println("Enqueud " + num);
-      } catch (InterruptedException e) {
+      } catch (Exception e) {
         e.printStackTrace();
       }
     }
@@ -46,7 +46,7 @@ public class testBoundedQueue {
     public void run() {
       try {
         System.out.println(syncQueue.dequeue());
-      } catch (InterruptedException e) {
+      } catch (Exception e) {
         e.printStackTrace();
       }
     }

@@ -55,7 +55,9 @@
 			\begin{parts}
 				\setcounter{partno}{1}
 				\part
-					The main difficulty we get is when deciding whether or not the queue is full or if the queue is empty.
+					The first difficulty comes when enqueuing. Here we must make sure before enqueuing that there is enough space in the queue for that, so first we must retrieve the $tail$ and $head$ value and ensure that $head - tail != queueMaxSize$ if that passes then the issue is when adding the object to the queue we must make sure that the another thread did not add an object before us which implies testing that again and so on. Thus the only way is to use a test and set approach after wards which makes it more complex than with the lock. Further more each thread has no way of knowing without accessing the tail and head whether it can perform its tasks, this implies that the CPU will be used by thread that just idle getting the tail and head values while not making any progress compare to the lock where the thread will just wait to be awaken by the condition. 
+					
+					The second difficulty is the exact same idea for dequeuing in this case if the $head == tail$ then we must wait for en enqueue to happen but even if it did when dequeuing we also have to check that since our last verification the queue was not dequeud by another dequeuer thus we must test and set before being able to dequeue an object. Again that involves a lot of CPU idle time just getting and testing variables instead of doing useful work.
 			\end{parts}
 		\question
 			The test class is called MatrixVectorMultiplication.java
