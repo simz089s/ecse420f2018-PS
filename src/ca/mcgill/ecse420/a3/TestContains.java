@@ -25,9 +25,8 @@ public class TestContains {
         System.out.println("Adding number " + i + " to the list");
         intList.add(i);
         answer[i] = true;
-      }
-      else {
-          answer[i] = false;
+      } else {
+        answer[i] = false;
       }
     }
     for (int i = 0; i < 15; i++) {
@@ -36,13 +35,12 @@ public class TestContains {
       boolean ans = containsResult.get();
       System.out.println("The method contains with param " + i + " outputs " + ans);
       if (answer[i] != ans) {
-          testResult = false;
+        testResult = false;
       }
     }
     if (testResult) {
       System.out.println("Test passed");
-    }
-    else {
+    } else {
       System.out.println("Test failed");
     }
     exec.shutdown();

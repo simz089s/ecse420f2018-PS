@@ -14,8 +14,8 @@ public class MatrixVectorMultiplication {
     double[][] m = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
     measureParallelTime(m, v);
     measureSequentialTime(m, v);
-    //System.out.println(Arrays.toString(sequentialMultiplyMatrixVector(m,v)));
-    //System.out.println(Arrays.toString(parallelMultiplyMatrix(m, v)));
+    // System.out.println(Arrays.toString(sequentialMultiplyMatrixVector(m,v)));
+    // System.out.println(Arrays.toString(parallelMultiplyMatrix(m, v)));
   }
 
   private static double[][] generateRandomMatrix(int numRows, int numCols) {
@@ -91,7 +91,8 @@ public class MatrixVectorMultiplication {
         if (left.getDim() == 1) { // Base case
           ans.set(0, left.get(0) + right.get(0)); // Put sum into corresponding vector element
         } else {
-          // Do the task recursively by halving into top and bottom and waiting for their results (promises)
+          // Do the task recursively by halving into top and bottom and waiting for their results
+          // (promises)
           Vector[] leftSplit = left.split2();
           Vector[] rightSplit = right.split2();
           Vector[] ansSplit = ans.split2();
@@ -125,7 +126,8 @@ public class MatrixVectorMultiplication {
     @Override
     public void run() {
       try {
-        if (m.getColumnDim() == 250 || m.getRowDim() == 250) { // Base case set to 250 (see report for explanation)
+        if (m.getColumnDim() == 250
+            || m.getRowDim() == 250) { // Base case set to 250 (see report for explanation)
           for (int i = 0; i < m.getRowDim(); i++) {
             for (int j = 0; j < m.getColumnDim(); j++) {
               ans.add(i, m.get(i, j) * v.get(j));
