@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class testBoundedQueue {
-    private static TryTestAndSet<Integer> syncQueue = new TryTestAndSet<>(10);
+    private static TryLockFreeBoundedQueue<Integer> syncQueue = new TryLockFreeBoundedQueue<>(10);
     private static ExecutorService executor = Executors.newCachedThreadPool();
   public static void main(String[] args) {
     Random rand = new Random();
