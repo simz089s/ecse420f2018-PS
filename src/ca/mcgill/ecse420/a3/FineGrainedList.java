@@ -57,11 +57,9 @@ public class FineGrainedList<Item> {
       if (head.key < item.hashCode()) {
         head.next = new LockableNode<>(item);
         return true;
-      }
-      else if (head.key == item.hashCode()) {
+      } else if (head.key == item.hashCode()) {
         return false;
-      }
-      else {
+      } else {
         LockableNode<Item> newNode = new LockableNode<>(item);
         newNode.next = head;
         head = newNode;
@@ -76,11 +74,9 @@ public class FineGrainedList<Item> {
       if (cur.key < item.hashCode()) {
         pre = cur;
         cur = pre.next;
-      }
-      else if (cur.key == item.hashCode()) {
+      } else if (cur.key == item.hashCode()) {
         return false;
-      }
-      else {
+      } else {
         LockableNode<Item> newItem = new LockableNode<>(item);
         pre.next = newItem;
         newItem.next = cur;
